@@ -1,2 +1,0 @@
-defaultFactoryWorkspace=\#Tue Jan 21 11\:20\:40 EST 2020\ndefault\=de.ovgu.featureide.fm.core.DefaultFeatureModelFactory\n$de.ovgu.featureide.fm.core.format.fm.VelvetFeatureModelFormat\=de.ovgu.featureide.fm.core.MultiFeatureModelFactory\n$de.ovgu.featureide.fm.attributes.format.XmlExtendedFeatureModelFormat\=de.ovgu.featureide.fm.attributes.base.impl.ExtendedFeatureModelFactory\n
-eclipse.preferences.version=1

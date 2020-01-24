@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename type &apos;testsPackageRedirect.AddingEmailsToTrapingList&apos; to &apos;P_AddingEmailsToTrapingList&apos;&#x0A;- Original project: &apos;parcel-pickup&apos;&#x0A;- Original element: &apos;testsPackageRedirect.AddingEmailsToTrapingList&apos;&#x0A;- Renamed element: &apos;testsPackageRedirect.P_AddingEmailsToTrapingList&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;AddingEmailsToTrapingList&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;testsPackageRedirect{AddingEmailsToTrapingList.java[AddingEmailsToTrapingList" matchStrategy="1" name="P_AddingEmailsToTrapingList" qualified="false" references="true" similarDeclarations="false" stamp="1534192448251" textual="false" version="1.0"/>
-</session>

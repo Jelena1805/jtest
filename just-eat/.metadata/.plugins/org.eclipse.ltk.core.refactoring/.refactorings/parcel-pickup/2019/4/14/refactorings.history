@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename package &apos;PupServices&apos; to &apos;testsPupServices&apos;&#x0A;- Original project: &apos;parcel-pickup&apos;&#x0A;- Original element: &apos;parcel-pickup/src/PupServices&apos;&#x0A;- Renamed element: &apos;parcel-pickup/src/testsPupServices&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;PupServices&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src&lt;PupServices" name="testsPupServices" qualified="false" references="true" stamp="1554130164248" textual="false" version="1.0"/>
-</session>

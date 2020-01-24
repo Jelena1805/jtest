@@ -1,6 +1,0 @@
-1575385551838	Rename type 'CrmEditOnDemand'
-1575385568266	Rename type 'ScheduledDeletePickupTimeSlot'
-1575385581052	Rename type 'ScheduledRequestAlternateAddress'
-1575484510185	Rename type 'AdminToolReferalTest'
-1575562827173	Rename method 'updateAvailable'
-1575562850722	Rename method 'setAvailability'
