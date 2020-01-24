@@ -1,0 +1,158 @@
+package testsParcelPickup;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import main.java.Helper;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import java.util.concurrent.ThreadLocalRandom;
+
+
+public class PickupOndemandPost {
+	private static Helper helper;
+	int randomNum = ThreadLocalRandom.current().nextInt(1000, 10000);
+	String customerNum = "0000000001";
+	
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		helper = Helper.getInstance();
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+	}
+	
+	@Test
+	public void pickupOndemandPost() throws IOException, SQLException  {	
+
+        String url ="http://ows-arz-sha-stg-02.cpggpc.ca:5003/purs/pickup/ondemand";  
+        OkHttpClient client = new OkHttpClient();
+        String json = "{\n" + 
+        		" \"clientSourceAppKey\": \"1\",\n" + 
+        		" \"contactInfo\": {\n" + 
+        		"   \"contactNm\": \"me\",\n" + 
+        		"   \"email\": \"jelena@email.com\",\n" + 
+        		"   \"lang\": \"e\",\n" + 
+        		"   \"phone\": \"4167268765\",\n" + 
+        		"   \"phoneExt\": \"123\",\n" + 
+        		"   \"phoneType\": \"1\"\n" + 
+        		" },\n" + 
+        		" \"contractNum\": \"1234567\",\n" + 
+        		" \"customerNum\": \"0000000007\",\n" + 
+        		" \"itemsCharacteristics\": {\n" + 
+        		"   \"estimatedWeight\": \"570\",\n" + 
+        		"   \"heavyItemFlag\": true,\n" + 
+        		"   \"iilpflag\": false,\n" + 
+        		"   \"pickupVolume\": 4,\n" + 
+        		"   \"priority9AMFlag\": true,\n" + 
+        		"   \"pwwflag\": true,\n" + 
+        		"   \"unitOfWeight\": \"string\"\n" + 
+        		" },\n" + 
+        		" \"locationDetail\": {\n" + 
+        		"   \"fiveTonFlag\": true,\n" + 
+        		"   \"fiveTonNoLoadingDockFlag\": true,\n" + 
+        		"   \"loadingDockFlag\": true,\n" + 
+        		"   \"pickupInstruction\": \"string\"\n" + 
+        		" },\n" + 
+        		" \"pickupLocation\": {\n" + 
+        		"   \"address\": {\n" + 
+        		"     \"addrLn1\": \"365 March Rd\",\n" + 
+        		"     \"addrLn2\": \"\",\n" + 
+        		"     \"city\": \"Toronto\",\n" + 
+        		"     \"companyNm\": \"Ipost\",\n" + 
+        		"     \"postalCode\": \"K2K3N5\",\n" + 
+        		"     \"province\": \"ON\"\n" + 
+        		"   },\n" + 
+        		"   \"businessAddr\": true\n" + 
+        		" },\n" + 
+        		" \"pickupTime\": {\n" + 
+        		"   \"closingTime\": \"19:00\",\n" + 
+        		"   \"date\": \"2018-10-01\",\n" + 
+        		"   \"fromTime\": \"13:00\",\n" + 
+        		"   \"toTime\": \"15:00\"\n" + 
+        		" },\n" + 
+        		" \"remark\": \"Call meJ\",\n" + 
+        		" \"requesterCpcId\": \"Gacko\"\n" + 
+        		"}";
+        RequestBody body = RequestBody.create(
+        	      MediaType.parse("application/json; charset=utf-8"), json);
+        Request request = new Request.Builder()
+          .url(url)
+          .post(body)
+          .addHeader("Content-Type", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Accept", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Cache-Control", "no-cache")
+          .build();
+        Response response = client.newCall(request).execute();
+        String responseBody =  response.body().string(); 
+    	int responseCode =  response.code();
+    	Assert.assertEquals("Response Code",200, responseCode);  
+    	
+	    Assert.assertNotEquals("Response body", "", responseBody);	 	    
+		Connection connection = null;
+		connection = helper.connetToPURSEdb();	    
+	    String query ="SELECT  MAX(request_key) AS a FROM pickup_request WHERE REQUEST_TYPE_KEY=2";
+	    Statement stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        int id=0;
+        while(rs.next())
+        {
+        	 id = rs.getInt("a");
+        }
+        System.out.println("id = " +id);
+        //////pickup on demand
+	    String query1 = "Select * from request_on_demand WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            String pickup_date_from = rs1.getString("PICKUP_TIME_FROM").toString();
+            Assert.assertEquals("pickup_date_fro","2018-10-01 13:00:00.0", pickup_date_from); 
+            
+            String pickup_date_to = rs1.getString("PICKUP_TIME_TO").toString();
+           Assert.assertEquals("pickup_date_to","2018-10-01 15:00:00.0", pickup_date_to); 
+        }
+        //////pickup item
+	    query1 = "Select * from pickup_item WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int pickup_item_id = rs1.getInt("PICKUP_ITEM_KEY");
+            Assert.assertNotEquals("pickup_item_id",0, pickup_item_id); 
+        }   
+        
+        /////REQUEST_STATUS
+	    query1 = "Select * from REQUEST_STATUS WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int request_status = rs1.getInt("REQUEST_STATUS_KEY");
+            Assert.assertNotEquals("pickup_item_id",0, request_status); 
+        }   
+        
+        ///// PICKUP_PREFERENCE
+	    query1 = "SELECT  MAX(PICKUP_PREFERENCE_KEY) AS a FROM PICKUP_PREFERENCE";
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int request_status = rs1.getInt("a");
+            Assert.assertNotEquals("pickup_item_id",0, request_status); 
+        }         	
+	}
+	
+}

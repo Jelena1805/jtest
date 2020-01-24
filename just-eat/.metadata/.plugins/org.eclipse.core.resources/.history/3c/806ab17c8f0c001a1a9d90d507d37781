@@ -1,0 +1,131 @@
+package com.parcelpickupFrontEnd;
+
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.*;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+
+import com.sharedlibrary.Components;
+import com.sharedlibrary.Helper;
+
+
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
+public class CrmEditOnDemand {
+	private static WebDriver driver;
+	private static Helper helper;
+	//private static String contactEmail;
+
+	@BeforeClass
+	@Parameters({ "browser" })
+	public static void setUp(@Optional("chrome") String browser) throws Exception {
+		helper = Helper.getInstance();
+		driver = Helper.getDriver(browser);
+		driver.manage().window().setSize(new Dimension(1360, 1000));
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+		driver.navigate().to(helper.getProperty("stagingHome"));
+		String user = "erpUser";
+		String password = "erpPassword";		
+		String testName = "Starting test " + new Object() {}.getClass().getEnclosingMethod().getName();
+		helper.signInCP(driver, user, password, testName);
+		helper.pickupOnDemandDelete(helper.getProperty("erpCustomerNumber"));
+
+	}
+
+	@Test
+
+	public void onDemand() throws Exception {
+		///Set DIA
+		helper = Helper.getInstance();
+		String query1 = "UPDATE PICKUP_availability SET FIVE_TON_DAYS_IN_ADV_WEEKDAY ='3' WHERE POSTAL_CODE='L4X2R3'";
+        System.out.println(query1);
+        Connection connection = null;
+      ///  connection = helper.connetToPURSEdb();	        
+        //Statement stmt = connection.createStatement();       
+       // ResultSet rs1 = stmt.executeQuery(query1);
+        //System.out.println(rs1);
+		String testName= new Object() {}.getClass().getEnclosingMethod().getName();
+		System.out.println("Starting test " + testName);
+		driver.navigate().to(helper.getProperty("parcelPickup"));
+		helper.closeCookieBanner(driver);
+		Components.alternateAddress(driver, "L4X2R3");
+		Components.instructions(driver);
+		//// buton continue
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+        //contactEmail=  (String) javascriptExecutor.executeScript("return document.getElementById('contactEmail').value");
+		driver.findElement(By.id("contactSubmit")).click();
+		Thread.sleep(4000);
+		Components.packingPallets(driver);
+		Components.shipingServicesNoPayment(driver);
+		//Submit page
+		driver.findElement(By.id("packingSubmit")).click();	
+		////date and time
+		///Calendar
+		Thread.sleep(5000);
+		Components.onDemandPickuptime(driver);
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(7000);
+		Components.payment(driver, "account", "OD");
+		driver.switchTo().defaultContent();
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		WebElement confirmationElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pickup-confirmation-number")));
+		
+		 String confirmation = confirmationElement.getText();
+		 String[] parts = confirmation.split(": ");
+		 String id = parts[1];
+		 
+		 WebElement createRtnBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createRtnBtn")));
+		 createRtnBtn.click();
+		Thread.sleep(3000);
+		WebElement buttonleft = helper.FindElementSafe(driver, By.className("buttonleft"));
+		Assert.assertNotEquals(null, buttonleft);
+		buttonleft.findElement(By.xpath("//*[@id=\"main-content\"]/div/div/app-root/div/app-order-history/div/app-calendar-view/div[1]/history-view-switcher/div/div[1]/div")).click(); /// click on the list button 
+
+		Thread.sleep(2000);
+		helper.closeCookieBanner(driver);
+		WebElement listveiw = driver.findElement(By.className("mytable"));
+		listveiw.findElement(By.partialLinkText(id)).click();///// add id
+		 WebElement edit = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("micro-edit")));
+		 edit.click();
+		 Thread.sleep(4000);
+		driver.findElement(By.id("contactSubmit")).click();
+		Thread.sleep(4000);
+		driver.findElement(By.id("packingSubmit")).click();
+		Thread.sleep(2000);
+		Components.onDemandPickuptime(driver);
+		Thread.sleep(2000);
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(7000);
+		((JavascriptExecutor) driver).executeScript("window.scrollTo(document.body.scrollHeight, 0)");
+		Thread.sleep(1000);
+		driver.findElement(By.id("reviewSubmit")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pickup-confirmation-number")));
+
+		 confirmation = driver.findElement(By.className("pickup-confirmation-number")).getText();
+		 parts = confirmation.split(": ");
+		 id = parts[1];
+		
+	}
+
+	@AfterClass
+	public static void closeBrowser() throws Exception {
+		helper.takeScreenshot(driver, "packingIndividualy");		
+		driver.quit();
+	}
+}

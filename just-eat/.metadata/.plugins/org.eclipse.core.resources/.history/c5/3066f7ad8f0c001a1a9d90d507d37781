@@ -1,0 +1,162 @@
+package com.parcelpickupFrontEnd;
+
+
+
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.testng.annotations.*;
+
+import com.sharedlibrary.Components;
+import com.sharedlibrary.Helper;
+
+import io.netty.util.internal.ThreadLocalRandom;
+
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
+public class AdminToolRebook {
+	private static WebDriver driver;
+	private static Helper helper;
+	
+
+
+	@BeforeClass
+	@Parameters({ "browser" })
+	public  void setUp(@Optional("chrome") String browser) throws Exception {
+		helper = Helper.getInstance();
+		driver = Helper.getDriver(browser);
+		driver.manage().window().setSize(new Dimension(1360, 1000));
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+
+	}
+	@Test
+
+	public void CreateOnDemand() throws InterruptedException, IOException {
+		///logitn to admin tool
+		driver.navigate().to(helper.getProperty("admintool"));
+		String user = helper.getProperty("pupadminUser");
+		String password = helper.getProperty("pupadminPassword");	
+		driver.findElement(By.id("logonuidfield")).sendKeys(user);
+		driver.findElement(By.id("logonpassfield")).sendKeys(password);
+		driver.findElement(By.xpath("//*[@id=\"logonForm\"]/table/tbody/tr[8]/td[1]/input[1]")).click(); 
+		driver.findElement(By.id("navNodeAnchor_1_2")).click();
+		driver.findElement(By.id("navNodeAnchor_2_2")).click();
+		Helper.windowsSwitcher(driver);
+		Thread.sleep(5000);
+		driver.findElement(By.xpath("//*[@id=\"customerNum\"]")).sendKeys(helper.getProperty("erpCustomerNumber"));
+		driver.findElement(By.id("searchSubmit")).click();
+		Thread.sleep(4000);
+		String url = driver.getCurrentUrl();
+		 Boolean containsHttp =  url.toLowerCase().contains("orderhistory".toLowerCase());
+		 Assert.assertEquals(true, containsHttp);
+
+
+		driver.findElement(By.id("createNewPickup")).click();
+		Thread.sleep(2000);
+		helper.closeCookieBanner(driver);
+		//Components.alternateAddress(driver, "L4X2R2");
+		Components.instructions(driver);
+		//// buton continue
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+        String contactEmail = (String) javascriptExecutor.executeScript("return document.getElementById('contactEmail').value");
+		driver.findElement(By.id("contactSubmit")).click();
+		Thread.sleep(2000);
+
+	//////Packing
+		//////Packing
+		//Quantity and weight >9999
+		Components.packing(driver);
+		//shiping services 
+		Components.shipingServicesNoPayment(driver);
+		//Submit page
+		driver.findElement(By.id("packingSubmit")).click();	
+		////date and time
+		///Calendar
+		Thread.sleep(5000);
+		Components.onDemandPickuptime(driver);	
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(5000);
+		driver.findElement(By.id("reviewSubmit")).click();
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pickup-confirmation-number")));
+		driver.switchTo().defaultContent();
+		Thread.sleep(1000);
+		String confirmation = driver.findElement(By.className("pickup-confirmation-number")).getText();
+		String[] parts = confirmation.split(": ");
+		String id = parts[1]; // 004
+		
+		///go to details
+		driver.findElement(By.id("createRtnBtn")).click();
+		Thread.sleep(3000);
+		helper.closeCookieBanner(driver);
+		WebElement buttonleft = helper.FindElementSafe(driver, By.className("buttonleft"));
+		Assert.assertNotEquals(null, buttonleft);
+		buttonleft.findElement(By.xpath("//*[@id=\"main-content\"]/div/div/app-root/div/app-order-history/div/app-calendar-view/div[1]/history-view-switcher/div/div[1]/div")).click(); /// click on the list button 
+
+
+		WebElement listveiw = driver.findElement(By.className("mytable"));
+		listveiw.findElement(By.partialLinkText(id)).click();///// add id
+			///check micro-rebook is presented 
+		Thread.sleep(2000);
+		 WebElement rebook = helper.FindElementSafe(driver, By.className("micro-rebook"));
+		 rebook.click();
+		 Thread.sleep(4000);
+		driver.findElement(By.id("contactSubmit")).click();
+		Thread.sleep(4000);
+		driver.findElement(By.id("packingSubmit")).click();
+		Thread.sleep(2000);
+		Components.onDemandPickuptime(driver);
+		Thread.sleep(2000);
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(7000);
+		((JavascriptExecutor) driver).executeScript("window.scrollTo(document.body.scrollHeight, 0)");
+		Thread.sleep(1000);
+		driver.findElement(By.id("reviewSubmit")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pickup-confirmation-number")));
+
+		 confirmation = driver.findElement(By.className("pickup-confirmation-number")).getText();
+		 parts = confirmation.split(": ");
+		 id = parts[1]; // 004
+			///go to details and check all micro links are there
+			driver.findElement(By.id("createRtnBtn")).click();
+			Thread.sleep(3000);
+			helper.closeCookieBanner(driver);
+			Thread.sleep(1000);
+			helper.closeCookieBanner(driver);
+			 listveiw = driver.findElement(By.className("mytable"));
+			listveiw.findElement(By.partialLinkText(id)).click();///// add id
+				///check micro-links are presented 
+			Thread.sleep(2000);
+			WebElement microEdit = helper.FindElementSafe(driver, By.className("micro-edit"));
+			Assert.assertNotEquals(null, microEdit);
+			WebElement microRebook = helper.FindElementSafe(driver, By.className("micro-rebook"));
+			Assert.assertNotEquals(null, microRebook);
+			WebElement microCancel = helper.FindElementSafe(driver, By.className("micro-cancel"));
+			Assert.assertNotEquals(null, microCancel);
+					
+	}
+	
+
+	
+	
+	
+
+	@AfterClass
+	public static void quitBrowser() throws Exception {
+		helper.takeScreenshot(driver, "Messages");
+		driver.quit();
+	}
+}

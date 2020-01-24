@@ -1,0 +1,85 @@
+package testsParcelPickup;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import main.java.Helper;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+
+
+public class ScheduledPickupDelete {
+	private static Helper helper;
+	String customerNum = "0007023210";
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		helper = Helper.getInstance();
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+	}
+	
+	@Test
+	public void scheduledDelete() throws IOException, SQLException, InterruptedException  {	
+		Thread.sleep(10000);
+		Connection connection = null;
+		connection = helper.connetToPURSEdb();	    
+	    String query = "SELECT  MAX(request_key) AS a FROM pickup_request WHERE REQUEST_TYPE_KEY=1";
+	    Statement stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        int id=591;
+        while(rs.next())
+        {
+        	 id = rs.getInt("a");
+        }
+
+        System.out.println("id is =" + id);
+        OkHttpClient client = new OkHttpClient();
+        String url = helper.getProperty("ppstaging")+"/purs/pickup/scheduled/"+id;
+        String json = "{\n" + 
+        		"  \"authorizedBy\": \"strihfsdhsdfhng\",\n" + 
+        		"  \"canceledBy\": \"dfgdsfh\",\n" + 
+        		"  \"customerNumber\": \""+customerNum+"\"\n" + 
+        		"}";
+        RequestBody body = RequestBody.create(
+      	      MediaType.parse("application/json; charset=utf-8"), json);
+        Request request = new Request.Builder()
+          .url(url)
+          .delete(body)
+          .addHeader("Content-Type", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Accept", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Cache-Control", "no-cache")
+          .addHeader("Postman-Token", "e546a6d8-4931-4264-8c51-a5decea7ef2a")
+          .build();
+
+        Response response = client.newCall(request).execute();
+    	int responseCode =  response.code();
+    	Assert.assertEquals("Response Code",200, responseCode);  
+    	String responseBody =  response.body().string(); 
+	    Assert.assertNotEquals("Response body", "", responseBody);		    
+		connection = null;
+		connection = helper.connetToPURSEdb();	    
+	     query = "select * from request_status where request_key ="+ id;
+	     stmt = null;
+        stmt = connection.createStatement();
+         rs = stmt.executeQuery(query);
+        String requestid ="";
+        String pickuprecordstatus ="";
+        while (rs.next()) {
+        	int request_status_type_key = rs.getInt("REQUEST_STATUS_TYPE_KEY"); 
+        	Assert.assertEquals("Canceled status is 3", 3, request_status_type_key); 
+                   
+        }	}
+        
+
+	
+}

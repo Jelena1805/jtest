@@ -1,0 +1,110 @@
+########database#######
+
+
+#grid.url = http://localhost:4445/wd/hub/
+
+#grid.url =  http://10.131.243.73:4445/wd/hub/
+grid.url =  http://192.168.2.22:4444/wd/hub/
+saucelab.grid.url = 
+
+
+
+################# PR staging ##################
+admintoolwantedstage =12
+admintool =  http://portalstg.cpggpc.ca/irj/portal
+parcelPickup=https://stg12.canadapost.ca/pup/en/location
+staging = https://stg12.canadapost.ca/
+stagingHome = https://stg12.canadapost.ca/cpc/en/home.page
+
+
+
+##########PP staging ########
+#ppstaging = http://ows-arz-sha-stg-02.cpggpc.ca:5043
+#ppstaging = http://ows-arz-sha-stg-02.cpggpc.ca:5043
+###DP
+ppstaging=http://ows-arz-sha-stg-02.cpggpc.ca:5003
+#ppstaging=http://ows-arz-sha-stg-02.cpggpc.ca:5004
+#ppstaging=http://ows-arz-sha-stg-02.cpggpc.ca:5043
+##### integration DP 5043
+integration = https://nonprod-soa-gw-01.cpggpc.ca/integration2/mail/pickup/purs/json
+#integration =  https://nonprod-soa-gw-01.cpggpc.ca/staging3/mail/pickup/purs/json
+
+
+###users
+user:bubazelena124
+password: Online@1
+erpcustomer: 0007231196
+
+consumerUser:bubazelena124
+consumePpassword: Online@1
+
+comercialUser:7003942
+comercialPassword: Online@1
+
+smbuser:SMB_user1 
+smbpassword:Online@1
+smbcustomerNmb:0008689669
+
+pruser:7231196
+prpassword:Online@1
+
+bbuser:NTL_BestBuy
+bbpassword:Redirection1!
+
+notbbuser:commercial_01
+notbbpassword:Online@1
+
+intuser:intl
+intpassword:Online@1
+
+erp1User:1681592
+erp1Password:Online@1
+
+altUser: S_1006291
+altPassword: Happy123 
+
+#erpUser: 2013201
+#erpPassword: Online@1
+#erpCustomerNumber: 0002013201
+#holidayCustomerNumber:0002013201
+
+erpUser: automationJelena
+erpPassword: Online@1
+erpCustomerNumber: 0004445295
+holidayCustomerNumber:0004445295
+
+######blocked users 
+blockedUser: linkaccount
+blockedPassword: Happy123
+opblockedUser: Custom22
+opblockedPassword: Happy123
+
+###IILP user
+iilpuserl: iilpclient1
+iilppassword :Happy123
+
+###No IILP user
+noiilpuserl: testclient4
+noiilppassword :Happy123
+
+###No IILP user
+altuserl: S_7004720
+altpassword :Happy123
+
+pupadminUser:TESTDSRA02
+pupadminPassword:Dsraprj7!!
+
+atribute4User:1006603
+atribute4Password:Happy123
+
+rpoCustomer:000720127
+
+#Drivers
+#FireFox|Chrome|Safari|InternetExplorer -- default is FireFox
+WebDriver=Remote
+capabilities = Chrome
+
+webdriver.ie.driver=C:/Program Files (x86)/IEDriverServer/IEDriverServer.exe
+pin1 = 1014847889388108
+pin2 = 1019408889392103
+

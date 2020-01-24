@@ -1,0 +1,150 @@
+package testsParcelPickup;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import main.java.Helper;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import java.util.concurrent.ThreadLocalRandom;
+
+
+public class ScheduledPickupPost {
+	private static Helper helper;
+	int randomNum = ThreadLocalRandom.current().nextInt(1000, 10000);
+	String customerNum = "56678";
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		helper = Helper.getInstance();
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+	}
+	
+	@Test
+	public void pickupPost() throws IOException, SQLException  {	
+
+        String url =helper.getProperty("ppstaging")+"/purs/pickup/scheduled";  
+        OkHttpClient client = new OkHttpClient();
+        String json = "{\n" + 
+        		"\"contactInfo\":\n" + 
+        		"\n" + 
+        		"{ \"contactName\": \"John Doe\", \"contactPhone\": \"613-123-4567\", \"email\": \"john.doe@email.com\", \"lang\": \"e\", \"optOutEmailUpdatesFlag\": false, \"receiveEmailUpdatesFlag\": false, \"telephoneExt\": \"123\" }\n" + 
+        		",\n" + 
+        		"\"createBy\": \"string\",\n" + 
+        		"\"customerNum\": \"0007023210\",\n" + 
+        		"\"itemsCharacteristics\":\n" + 
+        		"\n" + 
+        		"{ \"estimatedDepth\": \"100\", \"estimatedDimension\": \"string\", \"estimatedHeight\": \"20\", \"estimatedWeight\": 78, \"estimatedWidth\": \"30\", \"heavyItemFlag\": true, \"iilpflag\": true, \"pickupVolume\": 50 }\n" + 
+        		",\n" + 
+        		"\"lang\": \"string\",\n" + 
+        		"\"locationDetail\":\n" + 
+        		"\n" + 
+        		"{ \"fiveTonFlag\": true, \"loadingDockFlag\": true, \"pickupInstructions\": \"Call me when you are here\" }\n" + 
+        		",\n" + 
+        		"\"pickupAddress\":\n" + 
+        		"\n" + 
+        		"{ \"addrLn1\": \"string\", \"addrLn2\": \"string\", \"alternateAddr\": true, \"city\": \"Ottawa\", \"companyNm\": \"string\", \"postalCode\": \"K2K3N5\", \"province\": \"ON\" }\n" + 
+        		",\n" + 
+        		"\"pickupRecordStatus\": \"NEW\",\n" + 
+        		"\"pickupType\": \"1\",\n" + 
+        		"\"remark\": \"string\",\n" + 
+        		"\"scheduleEndDate\": \"2019-12-12\",\n" + 
+        		"\"scheduleStartDate\": \"2018-10-28\",\n" + 
+        		"\"scheduledPickupTimes\": [\n" + 
+        		"{ \"scheduledDay\": \"WEDNESDAY\", \"preferredTime\": \"12:31\", \"closingTime\": \"17:30\" }\n" + 
+        		",\n" + 
+        		"\n" + 
+        		"{ \"scheduledDay\": \"THURSDAY\", \"preferredTime\": \"12:01\", \"closingTime\": \"17:30\" }\n" + 
+        		"],\n" + 
+        		"\"sourceApp\": \"CPO\",\n" + 
+        		"\"updateBy\": \"Dave\"\n" + 
+        		"}";
+        RequestBody body = RequestBody.create(
+        	      MediaType.parse("application/json; charset=utf-8"), json);
+        Request request = new Request.Builder()
+          .url(url)
+          .post(body)
+          .addHeader("Content-Type", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Accept", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Cache-Control", "no-cache")
+          .build();
+        Response response = client.newCall(request).execute();
+    	int responseCode =  response.code();
+    	Assert.assertEquals("Response Code",200, responseCode);  
+    	String responseBody =  response.body().string(); 
+    	System.out.println(responseBody);
+	    Assert.assertNotEquals("Response body", "", responseBody);	 	    
+		Connection connection = null;
+		connection = helper.connetToPURSEdb();	    
+	    String query = "SELECT  MAX(request_key) AS a FROM pickup_request WHERE REQUEST_TYPE_KEY=1";
+
+	    Statement stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        int id=0;
+        while(rs.next())
+        {
+        	 id = rs.getInt("a");
+        }
+        System.out.println("created id = " +id);
+        //////pickup on demand
+	    String query1 = "Select * from request_schedule WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            String SCHEDULE_PICKUP_START_DATE = rs1.getString("SCHEDULE_PICKUP_START_DATE").toString();
+            Assert.assertEquals("SCHEDULE_PICKUP_START_DATE","2018-12-12 00:00:00.0", SCHEDULE_PICKUP_START_DATE); 
+            
+            String SCHEDULE_PICKUP_STOP_DATE = rs1.getString("SCHEDULE_PICKUP_STOP_DATE").toString();
+           Assert.assertEquals("SCHEDULE_PICKUP_STOP_DATE","2019-12-12 00:00:00.0", SCHEDULE_PICKUP_STOP_DATE); 
+        }
+        //////pickup item
+	    query1 = "Select * from pickup_item WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int pickup_item_id = rs1.getInt("PICKUP_ITEM_KEY");
+            Assert.assertNotEquals("pickup_item_id",0, pickup_item_id); 
+        }   
+        
+        /////REQUEST_STATUS
+	    query1 = "Select * from REQUEST_STATUS WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int request_status = rs1.getInt("REQUEST_STATUS_KEY");
+            Assert.assertNotEquals("pickup_item_id",0, request_status); 
+        }   
+        
+        ///// PICKUP_PREFERENCE
+	    query1 = "SELECT  MAX(PICKUP_PREFERENCE_KEY) AS a FROM PICKUP_PREFERENCE";
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int request_status = rs1.getInt("a");
+            Assert.assertNotEquals("pickup_item_id",0, request_status); 
+        }         
+        
+        
+        
+        
+      	
+	}
+	
+}

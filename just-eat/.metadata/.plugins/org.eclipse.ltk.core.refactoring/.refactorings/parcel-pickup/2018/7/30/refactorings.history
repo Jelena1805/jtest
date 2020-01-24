@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;testsDashboard.test1&apos; to &apos;Template&apos;&#x0A;- Original project: &apos;parcel-pickup&apos;&#x0A;- Original element: &apos;testsDashboard.test1&apos;&#x0A;- Renamed element: &apos;testsDashboard.Template&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;test1&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;testsDashboard{test1.java[test1" matchStrategy="1" name="Template" qualified="false" references="true" similarDeclarations="false" stamp="1532445838774" textual="false" version="1.0"/>
+</session>

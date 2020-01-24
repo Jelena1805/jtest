@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;testsParcelPickup.PostalCodeGet&apos; to &apos;BPostalCodeGet&apos;&#x0A;- Original project: &apos;parcel-pickup&apos;&#x0A;- Original element: &apos;testsParcelPickup.PostalCodeGet&apos;&#x0A;- Renamed element: &apos;testsParcelPickup.BPostalCodeGet&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;PostalCodeGet&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;testsParcelPickup{PostalCodeGet.java[PostalCodeGet" matchStrategy="1" name="BPostalCodeGet" qualified="false" references="true" similarDeclarations="false" stamp="1538057570027" textual="false" version="1.0"/>
+</session>

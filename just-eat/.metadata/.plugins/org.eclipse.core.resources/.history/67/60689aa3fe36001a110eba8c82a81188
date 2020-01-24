@@ -1,0 +1,347 @@
+package com.sharedlibrary;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.netty.util.internal.ThreadLocalRandom;
+
+public class Components {
+
+	private static Helper helper;
+	
+	
+	public static void requestor(WebDriver driver) throws InterruptedException {
+		try
+		{
+		driver.findElement(By.id("requestorName")).sendKeys("Requestor automation");
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	public static void remarks(WebDriver driver) throws InterruptedException {
+
+	}
+
+	public static void pickScheduled(WebDriver driver) throws InterruptedException {
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("radio-border")));		
+		WebElement element = driver.findElement(By.tagName("app-frequency"));
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+		Thread.sleep(500); 
+		WebElement appFrequency = driver.findElement(By.tagName("app-frequency"));
+		List<WebElement> radioList = appFrequency.findElements(By.className("radio-border"));
+		Object[] radioListArary = radioList.toArray();		
+		((WebElement) radioListArary[1]).click();
+		Thread.sleep(1000);
+	}
+
+	public static void alternateAddress(WebDriver driver, String postalCode) throws InterruptedException {
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("app-address")));
+
+		WebElement appAddress = driver.findElement(By.tagName("app-address"));
+
+		WebElement element = driver.findElement(By.className("radio-group"));
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+		Thread.sleep(500); 
+		
+		
+		WebElement radioGgroup = appAddress.findElement(By.className("radio-group"));
+		List<WebElement> radioList = radioGgroup.findElements(By.tagName("div"));
+		Object[] radioListArary = radioList.toArray();
+		((WebElement) radioListArary[2]).click();
+
+		Thread.sleep(1000);
+		driver.findElement(By.id("businessNameId")).sendKeys("Business Name Test");
+		WebElement addressInput = driver.findElement(By.className("addressCompleteInput"));
+		Thread.sleep(1000);
+		addressInput.sendKeys(postalCode);
+		Thread.sleep(3000);
+		addressInput.sendKeys(Keys.ENTER);
+		Thread.sleep(3000);
+		addressInput.sendKeys(Keys.ENTER);
+		Thread.sleep(3000);
+	}
+
+	public static void instructions(WebDriver driver) throws InterruptedException {
+	
+		WebElement instruction = driver.findElement(By.tagName("app-instructions"));
+		instruction.findElement(By.className("arrow-down")).click();
+		Thread.sleep(1000);
+		try {
+			WebElement container = instruction.findElement(By.className("visible-menu"));
+		} catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		WebElement container = instruction.findElement(By.className("visible-menu"));
+		WebElement ulist = container.findElement(By.tagName("ul"));
+		List<WebElement> dragAndDropList = ulist.findElements(By.tagName("li"));
+		Object[] dragAndDropArary = dragAndDropList.toArray();
+		((WebElement) dragAndDropArary[3]).click();
+		driver.findElement(By.cssSelector("label[for=emailUpdates]")).click();
+		/// contact info
+		///// contact informations
+		driver.findElement(By.id("contactFullName")).clear();
+		driver.findElement(By.id("contactFullName")).sendKeys("Name Test");
+		driver.findElement(By.id("contactEmail")).clear();
+		driver.findElement(By.id("contactEmail")).sendKeys("email@gm.com");
+		driver.findElement(By.id("contactPhoneNumber")).clear();
+		driver.findElement(By.id("contactPhoneNumber")).sendKeys("6547653331");
+		driver.findElement(By.id("contactPhoneExt")).clear();
+		driver.findElement(By.id("contactPhoneExt")).sendKeys("123");
+		requestor(driver);
+	}
+
+	public static void packing(WebDriver driver) throws InterruptedException {
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("packingNumberOfItems")));
+		WebElement numberOfItems = driver.findElement(By.id("packingNumberOfItems"));
+		numberOfItems.sendKeys("999");
+		WebElement averageWeight = driver.findElement(By.id("packingWeightOfItems"));
+		averageWeight.sendKeys("25");
+		WebElement packingOverWeight = driver.findElement(By.cssSelector("label[for=packingOverWeight]"));
+		packingOverWeight.click();
+		Thread.sleep(1000);
+		// shiping services
+
+	}
+
+	public static void packingPallets(WebDriver driver) throws InterruptedException {
+		// Grouped on pallets or in containers
+		driver.findElement(By.xpath("//*[contains(text(),'Grouped on pallets or in containers')]")).click();
+		// driver.findElement(By.className("//*[@id=\"app-radio-group-3\"]/div[2]")).click();
+		// Quantity
+		// Number of pallets or containers
+		Thread.sleep(1000);
+		WebElement numberOfItems = driver.findElement(By.id("packingNumberOfPallets"));
+		numberOfItems.sendKeys("3");
+		Thread.sleep(500);
+
+		// shiping services
+
+	}
+
+	public static void scheduledPickuptime(WebDriver driver) throws InterruptedException, IOException {
+		////start date
+		helper = Helper.getInstance();
+		WebElement buttonCalendar =helper.FindElementSafe(driver, By.id("datetimeCalendarBtn"));
+		if(buttonCalendar!=null)
+		{		
+			WebElement month;
+
+			int randomDay = 0;
+			int randomTime = 0;
+			List<WebElement> daysList;
+			Object[] daysArary;
+			Thread.sleep(5000);
+			WebElement reviewSubmit = null;
+
+				driver.findElement(By.className("btn-calendar")).click();
+				month = driver.findElement(By.className("ngb-dp-month"));
+				daysList = driver.findElements(By.cssSelector("div[ng-reflect-disabled='false']"));
+				daysArary = daysList.toArray();
+				// if it is last day of month click for next month
+				if (daysArary.length == 0) {
+					driver.findElement(By.cssSelector("button[title='Next month']")).click();
+					month = driver.findElement(By.className("ngb-dp-month"));
+					daysList = driver.findElements(By.cssSelector("div[ng-reflect-disabled='false']"));
+					daysArary = daysList.toArray();
+				}
+				randomDay = ThreadLocalRandom.current().nextInt(0, daysArary.length);
+				WebElement day = ((WebElement) daysArary[randomDay]);
+				day.click();
+				Thread.sleep(5000);
+				/// starting time
+
+		}
+		
+		//// closing time
+		Thread.sleep(8000);
+		WebElement closingTime = driver.findElement(By.className("closing-dropdown-container"));
+		closingTime.click();
+		WebElement ulist = closingTime.findElement(By.tagName("ul"));
+		List<WebElement> dragAndDropList = ulist.findElements(By.tagName("li"));
+		Object[] dragAndDropArary = dragAndDropList.toArray();
+		((WebElement) dragAndDropArary[3]).click();
+		//// ready for pickup
+		WebElement datetimePickupTimeDropdown = driver
+				.findElement(By.xpath("//*[@id=\"datetimePickupTimeDropdown-0\"]/div"));
+		datetimePickupTimeDropdown.click();
+		ulist = datetimePickupTimeDropdown.findElement(By.tagName("ul"));
+		dragAndDropList = ulist.findElements(By.tagName("li"));
+		dragAndDropArary = dragAndDropList.toArray();
+		((WebElement) dragAndDropArary[3]).click(); 
+
+		/// select day 1
+		List<WebElement> daysList = driver.findElements(By.tagName("app-pill-toggle"));
+		Object[] daysListArary = daysList.toArray();
+		int dayInt = ThreadLocalRandom.current().nextInt(1, daysListArary.length - 1);
+		((WebElement) daysListArary[dayInt]).click();
+		Thread.sleep(2000);
+
+	}
+
+	public static void onDemandPickuptime(WebDriver driver) throws InterruptedException, IOException {
+		helper = Helper.getInstance();
+		WebElement month;
+		WebElement errorMsg = driver.findElement(By.tagName("body")); //// not n
+		int randomDay = 0;
+		int randomTime = 0;
+		List<WebElement> daysList;
+		Object[] daysArary;
+		Thread.sleep(5000);
+		WebElement reviewSubmit = null;
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("datetimePickupTimeDropdown")));
+		Thread.sleep(3000);
+		while (errorMsg != null) {
+			driver.findElement(By.className("btn-calendar")).click();
+			month = driver.findElement(By.className("ngb-dp-month"));
+			daysList = driver.findElements(By.cssSelector("div[ng-reflect-disabled='false']"));
+			daysArary = daysList.toArray();
+			// if it is last day of month click for next month
+			if (daysArary.length == 0) {
+				driver.findElement(By.cssSelector("button[title='Next month']")).click();
+				month = driver.findElement(By.className("ngb-dp-month"));
+				daysList = driver.findElements(By.cssSelector("div[ng-reflect-disabled='false']"));
+				daysArary = daysList.toArray();
+			}
+			randomDay = ThreadLocalRandom.current().nextInt(0, daysArary.length);
+			WebElement day = ((WebElement) daysArary[randomDay]);
+			day.click();
+			Thread.sleep(5000);
+			/// starting time
+			driver.findElement(By.id("datetimePickupTimeDropdown")).click();
+			Thread.sleep(2000);
+			List<WebElement> staringTimeList = driver.findElements(By.cssSelector("li[role=option]"));
+			Object[] staringTimeArary = staringTimeList.toArray();
+			randomTime = ThreadLocalRandom.current().nextInt(1, staringTimeArary.length);
+			((WebElement) staringTimeArary[randomTime]).click();
+			Thread.sleep(3000);
+			errorMsg = helper.FindElementSafe(driver, By.className("alert-message-container"));
+		}
+		/// Business closing time
+		driver.findElement(By.id("datetimeClosingTimeDropdown")).click();
+		List<WebElement> businessTimeList = driver.findElements(By.cssSelector("li[role=option]"));
+		Object[] businessTimeArary = businessTimeList.toArray();
+		int randomBussinesTime = ThreadLocalRandom.current().nextInt(1, businessTimeArary.length);
+		((WebElement) businessTimeArary[randomBussinesTime]).click();
+		Thread.sleep(1000);
+
+	}
+
+	public static void shipingServices(WebDriver driver) {
+		WebElement otherInput = driver.findElement(By.id("other"));
+		WebElement parent = (WebElement) ((JavascriptExecutor) driver).executeScript("return arguments[0].parentNode;",
+				otherInput);
+		parent.findElement(By.tagName("label")).click();
+
+	}
+
+	public static void shipingServicesNoPayment(WebDriver driver) {
+		WebElement otherInput = driver.findElement(By.id("worldwideItems"));
+		WebElement parent = (WebElement) ((JavascriptExecutor) driver).executeScript("return arguments[0].parentNode;",
+				otherInput);
+		parent.findElement(By.tagName("label")).click();
+
+	}
+
+	public static void payment(WebDriver driver, String paymentOption, String requestType) throws InterruptedException {
+
+		String price = "";
+		if (requestType.equals("OD")) {
+			WebDriverWait wait = new WebDriverWait(driver, 60);
+			WebElement total= wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("total-price")));		
+			WebElement totalPrice = total.findElement(By.className("price"));
+			price = totalPrice.getText();
+		}
+		if (price.equals("Free") & requestType.equals("OD")) {
+			((JavascriptExecutor) driver).executeScript("window.scrollTo(document.body.scrollHeight, 0)");
+			Thread.sleep(1000);
+			driver.findElement(By.id("reviewSubmit")).click();
+
+			Thread.sleep(5000);
+		}
+
+		else {
+
+			driver.switchTo().defaultContent();
+			driver.switchTo().frame(driver.findElement(By.id("cpwa__frame")));
+			Thread.sleep(1000);
+			//// add new credit card
+			if (paymentOption.equals("creditCard")) {
+				try {
+					driver.findElement(By.id("payByAdhocCC")).findElement(By.tagName("label")).click();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				Thread.sleep(3000);
+				driver.findElement(By.id("creditCardNumber")).sendKeys("4539603411393500");
+				driver.findElement(By.id("creditCardExpiryDate")).sendKeys("06 / 20");
+				driver.findElement(By.id("creditCardCVV")).sendKeys("675");
+				/*
+				 * WebElement address = driver.findElement(By.id("addressComplete"));
+				 * address.sendKeys("3653 chiplow rd"); Thread.sleep(3000);
+				 * address.sendKeys(Keys.ENTER); Thread.sleep(2000);
+				 */
+
+				WebElement input = driver.findElement(By.id("termsAndConditionsCPC"));
+				/// terms and conditons
+				WebElement terms = (WebElement) ((JavascriptExecutor) driver)
+						.executeScript("return arguments[0].parentNode;", input);
+				terms.click();
+
+			}
+			Thread.sleep(2000);
+			driver.findElement(By.xpath("//*[@id=\"placeOrder\"]/p/input")).click();
+
+		}
+		driver.switchTo().defaultContent();
+
+	}
+
+	public static void adminToolLogin(WebDriver driver) throws InterruptedException, IOException {
+		helper = Helper.getInstance();
+		driver.navigate().to(helper.getProperty("admintool"));
+		String user = helper.getProperty("pupadminUser");
+		String password = helper.getProperty("pupadminPassword");
+		driver.findElement(By.id("logonuidfield")).sendKeys(user);
+		driver.findElement(By.id("logonpassfield")).sendKeys(password);
+		driver.findElement(By.xpath("//*[@id=\"logonForm\"]/table/tbody/tr[8]/td[1]/input[1]")).click();
+		driver.findElement(By.id("navNodeAnchor_1_2")).click();
+		if(helper.getProperty("admintoolwantedstage").equals("12"))
+		{
+			driver.findElement(By.id("navNodeAnchor_2_2")).click();
+		}
+		else
+		{
+			driver.findElement(By.id("navNodeAnchor_2_4")).click();	
+		}
+		Helper.windowsSwitcher(driver);
+		Thread.sleep(5000);
+		helper.closeCookieBanner(driver);
+		driver.findElement(By.xpath("//*[@id=\"customerNum\"]")).sendKeys(helper.getProperty("erpCustomerNumber"));
+		driver.findElement(By.id("searchSubmit")).click();
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createNewPickup")));
+
+	}
+
+	public static void historyListview(WebDriver driver) {
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"main-content\"]/div/div/app-root/div/app-order-history/div/app-calendar-view/div[1]/history-view-switcher/div/div[1]")));
+		driver.findElement(By.xpath("//*[@id=\"main-content\"]/div/div/app-root/div/app-order-history/div/app-calendar-view/div[1]/history-view-switcher/div/div[1]")).click();
+		//buttonleft.click();
+	}
+}

@@ -1,0 +1,589 @@
+package main.java;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.cert.CertificateException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.Properties;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
+import org.im4java.core.CompareCmd;
+import org.im4java.core.IMOperation;
+import org.im4java.process.StandardStream;
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.google.common.base.Function;
+import main.java.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import oracle.net.jndi.TrustManager;
+
+public class Helper {
+
+	private static Properties properties;
+	private static Helper instance = null;
+	private final Logger logger = Logger.getLogger(this.getClass());
+	// private Helper helper;
+
+	public Helper() throws IOException {
+		URL url;
+		File f;
+
+		logger.info("Loading properties file");
+		properties = new Properties();
+		url = getClass().getClassLoader().getResource("Helper.properties");
+		f = new File(url.getPath());
+		if (f.exists()) {
+			FileReader fr;
+			fr = new FileReader(f);
+			properties.load(fr);
+		}
+
+		// set path for IEDriverServer
+		String a = properties.getProperty("webdriver.ie.driver");
+		System.setProperty("webdriver.ie.driver", properties.getProperty("webdriver.ie.driver"));
+		// set path for ChromeDriverServer
+		String url2 = url.getPath();
+		String[] url3 = url2.split("target/");
+		String urlChrome = url3[0].toString() + "src/main/resources/drivers/chromedriver.mac";
+		String urlFirefox = url3[0].toString() + "src/main/resources/drivers/geckodriver/";
+		// String url3 =
+		// "/Users/jstanojevic/SeleniumTests/src/main/resources/drivers/chromedriver";
+		// String chromedriverpath =
+		// this.getClass().getResource("/drivers/chromedriver.mac").getPath().replace("target/classes","src/main/resources");
+		System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver.mac");
+		System.setProperty("webdriver.geckodriver.driver", urlFirefox);
+	}
+
+	public static Helper getInstance() throws IOException {
+		if (instance == null) {
+			instance = new Helper();
+		}
+		return instance;
+	}
+
+	/*
+	 * get webdriver defined in properties - firefox is the default URL url1 =
+	 * getClass().getClassLoader().getResource("NewsGateUnzip/txt.txt");
+	 */
+	public WebDriver WebDriverChromeWithCap(DesiredCapabilities capabilities) {
+		WebDriver driver = null;
+		driver = new ChromeDriver(capabilities);
+		return driver;
+	}
+
+	public static WebDriver getDriver() {
+
+		String webdriver = properties.getProperty("WebDriver");
+
+		if (webdriver.equals("Remote")) {
+			RemoteWebDriver driver = null;
+			LoggingPreferences loggingprefs = new LoggingPreferences();
+			loggingprefs.enable(LogType.BROWSER, Level.ALL);
+
+			String cap = properties.getProperty("capabilities");
+
+			DesiredCapabilities capabilities = new DesiredCapabilities();
+
+			if (cap.equals("Chrome")) {
+				capabilities = DesiredCapabilities.chrome();
+			}
+			if (cap.equals("FireFox")) {
+				capabilities = DesiredCapabilities.firefox();
+
+			}
+			if (cap.equals("InternetExplorer")) {
+				capabilities = DesiredCapabilities.internetExplorer();
+			}
+
+			capabilities.setCapability(CapabilityType.LOGGING_PREFS, loggingprefs);
+
+			driver = new RemoteWebDriver(capabilities);
+			return driver;
+
+		}
+
+		else {
+			WebDriver driver = null;
+
+			if (webdriver.equals("Chrome")) {
+				driver = new ChromeDriver();
+			}
+			if (webdriver.equals("Safari")) {
+				driver = new SafariDriver();
+			}
+			if (webdriver.equals("InternetExplorer")) {
+				driver = new InternetExplorerDriver();
+			}
+			if (webdriver.equals("FireFox")) {
+				driver = new FirefoxDriver();
+			}
+			if (driver == null) {
+				driver = new FirefoxDriver();
+			}
+			return driver;
+		}
+	}
+
+	/** create driver for beta */
+
+	public WebDriver createDriver(String device, int width, int height, WebDriver driver, String uAgent) {
+		driver = null;
+		if (device == "Chrome") {
+			driver = new ChromeDriver();
+		}
+
+		else if (device == "Firefox") {
+			driver = new FirefoxDriver();
+		} else if (device == "Safari") {
+			driver = new SafariDriver();
+		} else {
+
+			FirefoxProfile profile = new FirefoxProfile();
+			profile.setPreference("general.useragent.override", uAgent);
+			driver = new FirefoxDriver();
+			// driver.manage().window().setSize(width, height);
+			// driver.manage().window().setSize(new Dimension(width, height));
+			// driver.manage().window().setSize(new Dimension(800, 621));
+
+		}
+
+		return driver;
+	}
+
+	/**
+	 * signIn - it is assumed that mystar is visible on the current page this will
+	 * run the sign in routine, config properties in Helper.properties
+	 * 
+	 * @param driver
+	 * @throws InterruptedException
+	 */
+	public boolean signInCP(WebDriver driver, String user, String password) throws InterruptedException {
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		WebElement engLangSelector = wait
+				.until(ExpectedConditions.visibilityOfElementLocated(By.id("engLangSelector")));
+		engLangSelector.click();
+		driver.findElement(By.id("signinModalLarge")).click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("usernameLarge"))).click();
+		WebElement userName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("usernameLarge")));
+		userName.sendKeys(properties.getProperty(user));
+		WebElement passwordLarge = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("passwordLarge")));
+		passwordLarge.sendKeys(properties.getProperty(password));
+		driver.findElement(By.cssSelector(".button, .sign-in-up-buttons")).click();
+		WebElement signOut = null;
+		/*
+		 * try { signOut =
+		 * wait.until(ExpectedConditions.visibilityOfElementLocated(By.className(
+		 * "sso-signout"))); } catch (Exception e) { } Assert.assertNotNull(signOut);
+		 */
+		System.out.println("Ending test " + new Object() {
+		}.getClass().getEnclosingMethod().getName());
+		return true;
+	}
+
+	public boolean signInCQ(WebDriver driver) throws InterruptedException {
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.pollingEvery(1, TimeUnit.SECONDS);
+		driver.navigate().to(properties.getProperty("baseAuthorURL"));
+
+		// wait for login page to show up
+		WebElement cqlogin = wait.until(new Function<WebDriver, WebElement>() {
+			public WebElement apply(WebDriver driver) {
+				return driver.findElement(By.id("login"));
+			}
+		});
+		if (cqlogin != null) {
+			String cqusername = properties.getProperty("cqusername");
+			String cqpassword = properties.getProperty("cqpassword");
+			cqlogin.findElement(By.id("username")).sendKeys(cqusername);
+			cqlogin.findElement(By.id("password")).sendKeys(cqpassword);
+			cqlogin.findElement(By.tagName("button")).click();
+			Thread.sleep(5000); // wait 5 seconds for login to finish.
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean compareImages(String exp, String cur, String diff) {
+		// This instance wraps the compare command
+		CompareCmd compare = new CompareCmd();
+
+		// For metric-output
+		compare.setErrorConsumer(StandardStream.STDERR);
+		IMOperation cmpOp = new IMOperation();
+		// Set the compare metric
+		cmpOp.metric("mae");
+
+		// Add the expected image
+		cmpOp.addImage(exp);
+
+		// Add the current image
+		cmpOp.addImage(cur);
+
+		// This stores the difference
+		cmpOp.addImage(diff);
+
+		try {
+			// Do the compare
+			compare.run(cmpOp);
+			return true;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
+
+	public static void windowsSwitcher(WebDriver driver) {
+		String mainWindow = driver.getWindowHandle();
+		Set<String> windowHandels = driver.getWindowHandles();
+		String newWindowHandle = "";
+		for (String handle : windowHandels) {
+			if (!handle.equals(mainWindow)) {
+				newWindowHandle = handle;
+				break;
+			}
+			driver.switchTo().window(handle);
+		}
+		driver.switchTo().window(newWindowHandle);
+	}
+
+	public static Boolean Exists(WebElement element) {
+		if (element == null) {
+			return false;
+		}
+		return true;
+	}
+
+	public static WebElement FindElementSafe(WebDriver driver, By by) {
+		try {
+			return driver.findElement(by);
+		} catch (NoSuchElementException e) {
+			return null;
+		}
+	}
+
+	public static String getUrlSource(String url) throws IOException {
+		URL yahoo = new URL(url);
+		URLConnection yc = yahoo.openConnection();
+		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), "UTF-8"));
+		String inputLine;
+		StringBuilder a = new StringBuilder();
+		while ((inputLine = in.readLine()) != null)
+			a.append(inputLine);
+		in.close();
+		return a.toString();
+	}
+
+	public void unzip(String zipFile, String outputPath) {
+
+		if (outputPath == null)
+			outputPath = "";
+		else
+			outputPath += File.separator;
+
+		// 1.0 Create output directory
+		File outputDirectory = new File(outputPath);
+
+		if (outputDirectory.exists())
+			outputDirectory.delete();
+
+		outputDirectory.mkdir();
+
+		// 2.0 Unzip (create folders & copy files)
+		try {
+
+			// 2.1 Get zip input stream
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(zipFile));
+
+			ZipEntry entry = null;
+			int len;
+			byte[] buffer = new byte[1024];
+
+			// 2.2 Go over each entry "file/folder" in zip file
+			while ((entry = zip.getNextEntry()) != null) {
+
+				if (!entry.isDirectory()) {
+					System.out.println("-" + entry.getName());
+
+					// create a new file
+					File file = new File(outputPath + entry.getName());
+
+					// create file parent directory if does not exist
+					if (!new File(file.getParent()).exists())
+						new File(file.getParent()).mkdirs();
+
+					// get new file output stream
+					FileOutputStream fos = new FileOutputStream(file);
+
+					// copy bytes
+					while ((len = zip.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
+
+					fos.close();
+				}
+			}
+			zip.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void addBoarder(WebDriver driver, WebElement element) {
+		JavascriptExecutor js;
+		js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].setAttribute('style', 'border:3px solid red')", element);
+	}
+
+	public void removeBoarder(WebDriver driver, WebElement element) {
+		JavascriptExecutor js;
+		js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].setAttribute('style', 'border:0 0 0')", element);
+	}
+
+	public void focus(WebDriver driver, WebElement element) {
+		JavascriptExecutor js;
+		js = (JavascriptExecutor) driver;
+		// String jsToExecute = String.format("var myElements =
+		// document.getElementsByClassName('vf-login-button');" + "for (var i = 0; i <
+		// myElements.length; i++)" +"{myElements[i].focus();}");
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+
+	}
+
+	public String getProperty(String string) {
+		return properties.getProperty(string);
+	}
+
+	public void setProperty(String key, String value) {
+		properties.setProperty(key, value);
+	}
+
+	public LocalDate getRandomDate()
+	{
+		Random random = new Random();
+		int minDay = (int) LocalDate.of(2019, 1, 1).toEpochDay();
+		int maxDay = (int) LocalDate.of(2019, 3, 28).toEpochDay();
+		long randomDay = minDay + random.nextInt(maxDay - minDay);
+		LocalDate randomDate = LocalDate.ofEpochDay(randomDay);
+		System.out.println("Random day from 2019/1/1 - 2020/03/28 is " + randomDate);
+		return randomDate;		
+	}
+	
+	
+	public Connection connetToPURSEdb() {
+		System.out.println("Please provide below details to connect Oracle Database");
+		System.out.println("DV1OR39");
+		System.out.println("PURS_OWNER");
+		System.out.println("Welcome!");
+		String db = "";
+		String user = "";
+		String password = "";
+		String env = properties.getProperty("ppstaging");
+		/*if (env.equals("http://ows-arz-sha-stg-02.cpggpc.ca:5044"))
+		{
+			db = "jdbc:oracle:thin:@//onchs-scan.cpggpc.ca:8090/PT1OR39_FCF";
+			user = "PURS_OWNER";
+			password = "Welcome!";
+		}*/
+		
+		
+		
+		if (env.equals("http://ows-arz-sha-stg-02.cpggpc.ca:5004"))
+		{
+			db = "jdbc:oracle:thin:@onchs-scan.cpggpc.ca:8090/PT1OR39_FCF";
+			user = "PURS_STGOWNER";
+			password = "Welcome!";
+		}
+		
+		
+		else if(env.equals("http://ows-arz-sha-stg-02.cpggpc.ca:5000"))
+		{
+			db = "jdbc:oracle:thin:@S-00814-D5C.cpggpc.ca:1566/DV1OR39";
+			user = "PURS_DEVOWNER";
+			password = "Welcome!";
+		}
+		
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		Connection connection = null;
+		try {
+			//connection = DriverManager.getConnection("jdbc:oracle:thin:@//S-00814-D5C:1566/DV1OR39", "PURSDEV_OWNER","Welcome!");			
+			connection = DriverManager.getConnection(db,user,password);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (connection != null) {
+			System.out.println("nSuccessfullly connected to Oracle DB");
+		} else {
+			System.out.println("nFailed to connect to Oracle DB");
+		}
+		return connection;
+	}
+
+	public void cancelRedirection(WebDriver driver, String pin) {
+		try {
+			driver.navigate().to(getProperty("cancel"));
+			driver.findElement(By.id("app-input-1")).sendKeys(pin);
+			driver.findElement(By.className("btn-normal")).click();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	public void closeCookieBanner(WebDriver driver) {
+		try {
+			driver.findElement(By.className("gdpr-cookie-banner__policy-understand")).click();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	
+	public int getId(int type) throws SQLException
+	{
+		String query = "SELECT  MAX(request_key) AS a FROM pickup_request WHERE REQUEST_TYPE_KEY="+type;
+		Connection connection = null;
+		connection = connetToPURSEdb();	    
+	    Statement stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        int id=0;
+        while(rs.next())
+        {
+        	 id = rs.getInt("a");
+        }
+        System.out.println("request_key is " +id);
+		
+		return id;		
+	}
+	
+	public String get_customer_number(int id) throws SQLException
+	{
+		
+		String id_string = Integer.toString(id);
+        Connection connection = connetToPURSEdb();
+        String query = "SELECT CUSTOMER_NUMBER  FROM pickup_request WHERE REQUEST_key =" +id;
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(query);
+        String customer_number="";
+        while(rs.next())
+        {
+        	customer_number = rs.getString("CUSTOMER_NUMBER");
+        }
+        
+        System.out.println("customer number is " +customer_number);
+		return customer_number;
+	}
+	
+	
+	public Response OkHttpNoSSL(Request request) throws IOException, SQLException  {
+		Response response;
+		
+		try {
+		    // Create a trust manager that does not validate certificate chains
+		    final TrustManager[] trustAllCerts = new TrustManager[] {
+		        new TrustManager() {
+		          @Override
+		          public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+		          }
+
+		          @Override
+		          public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+		          }
+
+		          @Override
+		          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+		            return new java.security.cert.X509Certificate[]{};
+		          }
+		        }
+		    };
+		    
+		    final SSLContext sslContext = SSLContext.getInstance("SSL");
+		    sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+		    // Create an ssl socket factory with our all-trusting manager
+		    final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+		    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+		    builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+		    builder.hostnameVerifier(new HostnameVerifier() {
+		      @Override
+		      public boolean verify(String hostname, SSLSession session) {
+		        return true;
+		      }
+		    });
+		    OkHttpClient client = builder.build();
+		    response = client.newCall(request).execute();
+		    
+		  } catch (Exception e) {
+		    throw new RuntimeException(e);
+		  }   
+		return response;
+	}		
+	
+	
+	
+}

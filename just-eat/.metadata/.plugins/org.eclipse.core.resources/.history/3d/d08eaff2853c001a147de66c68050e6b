@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="ParcelPickupFrontEnd" parallel="classes" thread-count="1">
+  <parameter name="browser" value="chrome"/>
+  
+  <!-- <listeners>
+        <listener class-name="com.epam.reportportal.testng.ReportPortalTestNGListener"/>
+    </listeners>   -->
+    
+    <test name="ParcelPickupFrontEnd-ChromeTests">
+            
+             
+        <classes>
+        	<class name="com.parcelpickupFrontEnd.AddNewAddressTest"/>
+        	<class name="com.parcelpickupFrontEnd.AddressValidatonMessagesTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminCrmCrateTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminLandingPageAndSearchTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminToolCrateOnDemandRequestTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminToolCreateScheduledRequestTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminToolHistoryTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminToolNegativeScenariosTest"/>        	
+        	<class name="com.parcelpickupFrontEnd.AdminToolNoEditMornngRequestTest"/>
+        	<!-- <class name="com.parcelpickupFrontEnd.AdminToolRebookAvailabilityChangedTest"/>-->
+        	<class name="com.parcelpickupFrontEnd.AdminToolRebookTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdminToolRemarkTest"/>
+        	<class name="com.parcelpickupFrontEnd.AdmintToolRebookCrmTest"/>
+        	<class name="com.parcelpickupFrontEnd.AlternateAddressAsMainLocationTest"/>
+        	<class name="com.parcelpickupFrontEnd.Atrribute4and6Test"/>
+        	<class name="com.parcelpickupFrontEnd.BlockedAccountTest"/>
+        	<class name="com.parcelpickupFrontEnd.CancelOnDemandRequestTest"/>
+        	<class name="com.parcelpickupFrontEnd.CopyOrderTest"/>
+        	<class name="com.parcelpickupFrontEnd.CreateOnDemandPackingIndividuallyTest"/>
+        	<class name="com.parcelpickupFrontEnd.CreateOnDemandPackingPalletsTest"/>
+        	<class name="com.parcelpickupFrontEnd.CrmCancelTest"/>
+        	<class name="com.parcelpickupFrontEnd.CrmCrateScheduledTest"/>
+        	<class name="com.parcelpickupFrontEnd.CrmCreateOnDemandTest"/>
+        	<class name="com.parcelpickupFrontEnd.CrmEditOnDemandTest"/>
+        	<class name="com.parcelpickupFrontEnd.CrmEditScheduledTest"/>
+        	<class name="com.parcelpickupFrontEnd.DateAndTimeTest"/>
+        	<class name="com.parcelpickupFrontEnd.DifferentPaymentMetodsTest"/>
+        	<class name="com.parcelpickupFrontEnd.DriversInstructionsTest"/>
+        	<class name="com.parcelpickupFrontEnd.EditLocationFromSubmitOnDemandTest"/>
+        	<class name="com.parcelpickupFrontEnd.EditScheduledFromSubmitePageTest"/>
+        	<class name="com.parcelpickupFrontEnd.ExistingPickupWithinOneHourTest"/>
+        	<class name="com.parcelpickupFrontEnd.HeaderAndFooterTest"/>
+        	<class name="com.parcelpickupFrontEnd.HistoryTest"/>
+        	<class name="com.parcelpickupFrontEnd.IilpFlagsTest"/>
+        	<class name="com.parcelpickupFrontEnd.LocationAndAccountsTest"/>
+        	<class name="com.parcelpickupFrontEnd.ModifyOnDemandAvailabilityChangedTest"/>
+        	<class name="com.parcelpickupFrontEnd.ModifyOnDemandOrderTest"/>
+        	<class name="com.parcelpickupFrontEnd.ModifyScheduledOrderTest"/>
+        	<class name="com.parcelpickupFrontEnd.OrderDetailsTest"/>
+        	<class name="com.parcelpickupFrontEnd.PaymentNegativeScenariosTest"/>
+        	<class name="com.parcelpickupFrontEnd.PaymentScheduledTest"/>
+        	<class name="com.parcelpickupFrontEnd.ProgressBarTest"/>
+        	<class name="com.parcelpickupFrontEnd.SchedueledCreatePickupTest"/>
+        	<class name="com.parcelpickupFrontEnd.ScheduleDateAndTimeTest"/>
+        	<class name="com.parcelpickupFrontEnd.ScheduledDeletePickupTimeSlotTest"/>
+        	<class name="com.parcelpickupFrontEnd.ScheduledRequestAlternateAddressTest"/>
+        	<class name="com.parcelpickupFrontEnd.SpinnerOnDemandTest"/>
+        	<class name="com.parcelpickupFrontEnd.SpinnerScheduleTest"/>
+        	<class name="com.parcelpickupFrontEnd.SuspendScheduledTest"/>
+
+        </classes>
+    </test>
+    
+    
+  
+  
+   </suite>

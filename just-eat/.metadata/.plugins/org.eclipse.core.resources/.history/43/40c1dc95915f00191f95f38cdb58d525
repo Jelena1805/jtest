@@ -1,0 +1,277 @@
+package testsParcelPickup;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.Random;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import main.java.Helper;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import java.util.concurrent.ThreadLocalRandom;
+
+
+public class ScheduledPickupPost {
+	private static Helper helper;
+	int randomNum = ThreadLocalRandom.current().nextInt(1000, 10000);
+	static String customerNum = "0001874039";
+	static String id;
+	LocalDate randomDate;
+	
+	@BeforeClass
+	public static void setUp() throws Exception {
+		helper = Helper.getInstance();
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+	}
+	
+
+	
+	
+	@Test
+	public void pickupPost() throws IOException, SQLException  {	
+
+		String postalCode=postalCodeGenerate();		
+		randomDate = helper.getRandomDate();
+		String url =helper.getProperty("ppstaging")+"/purs/"+customerNum+"/pickuprequest/scheduled";
+        OkHttpClient client = new OkHttpClient();
+        String json = "{\n" + 
+        		"  \"contactInfo\": {\n" + 
+        		"    \"contactName\": \"jelena test\",\n" + 
+        		"    \"contactPhone\": \"613-123-4567\",\n" + 
+        		"    \"email\": \"abc1@email.com\",\n" + 
+        		"    \"lang\": \"e\",\n" + 
+        		"    \"optOutEmailUpdatesFlag\": false,\n" + 
+        		"    \"receiveEmailUpdatesFlag\": false,\n" + 
+        		"    \"telephoneExt\": \"123\"\n" + 
+        		"  },\n" + 
+        		"  \"createBy\": \"string\",\n" + 
+        		"  \"itemsCharacteristics\": {\n" + 
+        		"    \"estimatedDepth\": \"100\",\n" + 
+        		"    \"estimatedDimension\": \"string\",\n" + 
+        		"    \"estimatedHeight\": \"20\",\n" + 
+        		"    \"estimatedWeight\": 78,\n" + 
+        		"    \"estimatedWidth\": \"30\",\n" + 
+        		"    \"heavyItemFlag\": true,\n" + 
+        		"    \"iilpflag\": true\n" + 
+        		"  },\n" + 
+        		"   \"pickupVolume\": 50,\n" + 
+        		"  \"lang\": \"e\",\n" + 
+        		"  \"locationDetail\": {\n" + 
+        		"    \"fiveTonFlag\": true,\n" + 
+        		"    \"loadingDockFlag\": true,\n" + 
+        		"    \"pickupInstructions\": \"front door\"\n" + 
+        		"  },\n" + 
+        		"  \"pickupAddress\": {\n" + 
+        		"    \"addrLn1\": \"100A-4755 VAN HORNE AVE\",\n" + 
+        		"    \"addrLn2\": \"\",\n" + 
+        		"    \"alternateAddr\": true,\n" + 
+        		"    \"city\": \"MONTREAL\",\n" + 
+        		"    \"companyNm\": \"PERFECT MAGIC ENR\",\n" + 
+        		"    \"postalCode\": \""+postalCode+"\",\n" + 
+        		"    \"province\": \"QC\"\n" + 
+        		"  },\n" + 
+        		"  \"pickupRecordStatus\": \"NEW\",\n" + 
+        		"  \"pickupType\": \"1\",\n" + 
+        		"  \"remark\": \"string\",\n" + 
+        		"  \"scheduleEndDate\": \"2019-12-12\",\n" + 
+        		"  \"scheduleStartDate\": \""+randomDate+"\",\n" + 
+        		"  \"scheduledPickupTimes\": [\n" + 
+        		"    {\n" + 
+        		"      \"scheduledDay\": \"WEDNESDAY\",\n" + 
+        		"      \"preferredTime\": \"13:31\",\n" + 
+        		"      \"closingTime\": \"17:30\"\n" + 
+        		"    }\n" + 
+        		"  ],\n" + 
+        		"  \"sourceApp\": \"CPO\",\n" + 
+        		"  \"updateBy\": \"Abhijeet1\"\n" + 
+        		"}";
+        RequestBody body = RequestBody.create(
+        	      MediaType.parse("application/json; charset=utf-8"), json);
+        Request request = new Request.Builder()
+          .url(url)
+          .post(body)
+          .addHeader("Content-Type", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Accept", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Cache-Control", "no-cache")
+          .build();
+        Response response = client.newCall(request).execute();
+    	int responseCode =  response.code(); 
+    	String responseBody =  response.body().string();
+    	System.out.println(responseBody);
+    	Assert.assertEquals("Response Code",200, responseCode); 
+	    Assert.assertNotEquals("Response body", "", responseBody);	
+	    
+        ////extract id from response body
+        String[] tokens = responseBody.split("\",\"");        
+        id = tokens[0];
+        System.out.println(id);
+        tokens = id.split("\":\"");
+        id = tokens[1];
+        System.out.println(id);
+	    
+	    
+	    
+		Connection connection = null;
+		connection = helper.connetToPURSEdb();	    
+	    Statement stmt = null;
+        stmt = connection.createStatement();
+        //////pickup on demand
+	    String query1 = "Select * from request_schedule WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        ResultSet rs1 = stmt.executeQuery(query1);
+        String startDate = randomDate+" 00:00:00.0";
+        while (rs1.next()) {
+        	
+            String SCHEDULE_PICKUP_START_DATE = rs1.getString("SCHEDULE_PICKUP_START_DATE").toString();
+            Assert.assertEquals("SCHEDULE_PICKUP_START_DATE",startDate, SCHEDULE_PICKUP_START_DATE); 
+            
+            String SCHEDULE_PICKUP_STOP_DATE = rs1.getString("SCHEDULE_PICKUP_END_DATE").toString();
+           Assert.assertEquals("SCHEDULE_PICKUP_STOP_DATE","2019-12-12 00:00:00.0", SCHEDULE_PICKUP_STOP_DATE); 
+        }
+        //////pickup item
+	    query1 = "Select * from pickup_item WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int pickup_item_id = rs1.getInt("PICKUP_ITEM_KEY");
+            Assert.assertNotEquals("pickup_item_id",0, pickup_item_id); 
+        }   
+        
+        /////REQUEST_STATUS
+	    query1 = "Select * from REQUEST_STATUS WHERE request_key ="+ id;
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int request_status = rs1.getInt("REQUEST_STATUS_KEY");
+            Assert.assertNotEquals("pickup_item_id",0, request_status); 
+        }   
+        
+        ///// PICKUP_PREFERENCE
+	    query1 = "SELECT  MAX(PICKUP_PREFERENCE_KEY) AS a FROM PICKUP_PREFERENCE";
+	    stmt = null;
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+        
+        while (rs1.next()) {
+            int request_status = rs1.getInt("a");
+            Assert.assertNotEquals("pickup_item_id",0, request_status); 
+        }         
+        
+        
+        
+        
+      	
+	}
+	
+	private String postalCodeGenerate() throws IOException
+	{
+		
+		
+		Random ran = new Random();
+		int x1 = ran.nextInt(10);
+		int x2 = ran.nextInt(10);
+		int x3 = ran.nextInt(8);
+
+		String postalCode = "A"+x1+"A"+x2+"A"+x3;
+		System.out.println(postalCode);
+		String url =helper.getProperty("ppstaging")+"/purs/pickup/acd";  
+        OkHttpClient client = new OkHttpClient();
+        String json = "[\n" + 
+        		"  {\n" + 
+        		"    \"availException\": 0,\n" + 
+        		"    \"custNeedsHolidayAuth\": true,\n" + 
+        		"    \"custNeedsWeekendAuth\": true,\n" + 
+        		"    \"effectiveDate\": \"2019-01-01\",\n" + 
+        		"    \"endDate\": \"2019-12-31\",\n" + 
+        		"    \"heavy\": {\n" + 
+        		"      \"cutoffHoliday\": \"17:00\",\n" + 
+        		"      \"cutoffSat\": \"17:00\",\n" + 
+        		"      \"cutoffSun\": \"17:00\",\n" + 
+        		"      \"cutoffWeekday\": \"17:00\",\n" + 
+        		"      \"daysInAdvHoliday\": 1,\n" + 
+        		"      \"daysInAdvSat\": 1,\n" + 
+        		"      \"daysInAdvSun\": 1,\n" + 
+        		"      \"daysInAdvWeekday\": 1\n" + 
+        		"    },\n" + 
+        		"    \"other\": {\n" + 
+        		"      \"cutoffHoliday\": \"17:00\",\n" + 
+        		"      \"cutoffSat\": \"17:00\",\n" + 
+        		"      \"cutoffSun\": \"17:00\",\n" + 
+        		"      \"cutoffWeekday\": \"17:00\"\n" + 
+        		"    },\n" + 
+        		"    \"postal\": \""+postalCode+"\",\n" + 
+        		"    \"printer\": \"ZZ001\",\n" + 
+        		"    \"printer2\": \"ZZ002\",\n" + 
+        		"    \"printer2Holiday\": \"ZZ008\",\n" + 
+        		"    \"printer2Sat\": \"ZZ004\",\n" + 
+        		"    \"printer2Sun\": \"ZZ006\",\n" + 
+        		"    \"printerHoliday\": \"ZZ007\",\n" + 
+        		"    \"printerSat\": \"ZZ003\",\n" + 
+        		"    \"printerSun\": \"ZZ005\",\n" + 
+        		"    \"pww\": {\n" + 
+        		"      \"cutoffHoliday\": \"17:00\",\n" + 
+        		"      \"cutoffSat\": \"17:00\",\n" + 
+        		"      \"cutoffSun\": \"17:00\",\n" + 
+        		"      \"cutoffWeekday\": \"17:00\"\n" + 
+        		"    },\n" + 
+        		"    \"regular\": {\n" + 
+        		"      \"cutoffHoliday\": \"17:00\",\n" + 
+        		"      \"cutoffSat\": \"17:00\",\n" + 
+        		"      \"cutoffSun\": \"17:00\",\n" + 
+        		"      \"cutoffWeekday\": \"17:00\",\n" + 
+        		"      \"daysInAdvHoliday\": 1,\n" + 
+        		"      \"daysInAdvSat\": 1,\n" + 
+        		"      \"daysInAdvSun\": 1\n" + 
+        		"    },\n" + 
+        		"    \"regularCutoff\": \"17:00\",\n" + 
+        		"    \"regularCutoffRequest\": \"17:00\",\n" + 
+        		"    \"services\": 3,\n" + 
+        		"    \"ton5\": {\n" + 
+        		"      \"cutoffHoliday\": \"17:00\",\n" + 
+        		"      \"cutoffSat\": \"17:00\",\n" + 
+        		"      \"cutoffSun\": \"17:00\",\n" + 
+        		"      \"cutoffWeekday\": \"17:00\",\n" + 
+        		"      \"daysInAdvHoliday\": 1,\n" + 
+        		"      \"daysInAdvSat\": 1,\n" + 
+        		"      \"daysInAdvSun\": 1,\n" + 
+        		"      \"daysInAdvWeekday\": 1\n" + 
+        		"    }\n" + 
+        		"  }\n" + 
+        		"]";
+        RequestBody body = RequestBody.create(
+        	      MediaType.parse("application/json; charset=utf-8"), json);
+        Request request = new Request.Builder()
+          .url(url)
+          .post(body)
+          .addHeader("Content-Type", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Accept", "application/vnd.cpc.purs-v1+json")
+          .addHeader("Cache-Control", "no-cache")
+          .build();
+        Response response = client.newCall(request).execute();
+    	int responseCode =  response.code();
+    	Assert.assertEquals("Response Code",200, responseCode);  
+    	String responseBody =  response.body().string(); 
+	    Assert.assertNotEquals("Response body", "", responseBody);	 	    
+	    System.out.println(responseBody);
+		
+		
+		
+		return postalCode;
+	}
+	
+}

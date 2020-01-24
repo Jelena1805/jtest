@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.testng.eclipse.launchconfig">
+    <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.testng.remote.RemoteTestNG"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="parcel-pickup"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+    <mapAttribute key="org.testng.eclipse.ALL_CLASS_METHODS"/>
+    <listAttribute key="org.testng.eclipse.CLASS_TEST_LIST">
+        <listEntry value="com.ppAPI.ScheduledRequestCancelTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.PaymentScheduledTest"/>
+        <listEntry value="com.ppAPI.ScheduledPickupPostTest"/>
+        <listEntry value="com.ppAPI.CloseExistingScheduledTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.SchedueledCreatePickupTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.HeaderAndFooterTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.CancelOnDemandRequestTest"/>
+        <listEntry value="com.ppAPI.ScheduledPickupOnHoldPostTest"/>
+        <listEntry value="com.ppAPI.EligibilityCustomerTest"/>
+        <listEntry value="com.ppAPI.BPostalCodeGetTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ModifyOnDemandOrderTest"/>
+        <listEntry value="com.ppAPI.GetPickupAvailabilityTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ScheduledDeletePickupTimeSlot"/>
+        <listEntry value="com.sharedlibrary.Components"/>
+        <listEntry value="com.parcelpickupFrontEnd.DriversInstructionsTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.OrderDetailsTest"/>
+        <listEntry value="com.ppAPI.GetHistory3or7Status"/>
+        <listEntry value="com.parcelpickupFrontEnd.ProgressBarTest"/>
+        <listEntry value="com.sharedlibrary.OkHttpNoSslVerification"/>
+        <listEntry value="com.ppAPI.PickupPrintersTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.EditLocationFromSubmitOnDemandTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.SpinnerOnDemandTest"/>
+        <listEntry value="com.sharedlibrary.JsonStrings"/>
+        <listEntry value="com.parcelpickupFrontEnd.ExistingPickupWithinOneHourTest"/>
+        <listEntry value="com.ppAPI.CloseExistingOnDemandTest"/>
+        <listEntry value="com.ppAPI.PickupGETdetailsTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ModifyScheduledOrderTest"/>
+        <listEntry value="com.ppAPI.OnDemandRequestCancelTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.DateAndTimeTest"/>
+        <listEntry value="com.ppAPI.TimeZoneTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ScheduledRequestAlternateAddress"/>
+        <listEntry value="com.ppAPI.PickupOnDemandPutTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.CreateOnDemandPackingPalletsTest"/>
+        <listEntry value="com.ppAPI.BusinessCalendarOnDemandTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.SpinnerScheduleTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.SuspendScheduledTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ContactInfromationTest"/>
+        <listEntry value="com.sharedlibrary.RandomString"/>
+        <listEntry value="com.ppAPI.ScheduledPickupResumeDeleteTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.PaymentNegativeScenariosTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.AddressValidatonMessagesTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.BlockedAccountTest"/>
+        <listEntry value="com.ppAPI.CalendarOnDemandParametarsTest"/>
+        <listEntry value="com.ppAPI.GetPickupAvailabilityV2Test"/>
+        <listEntry value="com.parcelpickupFrontEnd.PaymentOnDemandTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.AdminToolNegativeScenariosTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.AlternateAddressAsMainLocationTest"/>
+        <listEntry value="com.ppAPI.BusinessCallendarScheduledTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.CloneOrderTest"/>
+        <listEntry value="com.sharedlibrary.Helper"/>
+        <listEntry value="com.parcelpickupFrontEnd.IilpFlagTest"/>
+        <listEntry value="com.ppAPI.PickupOndemandPostTest"/>
+        <listEntry value="com.ppAPI.CheckExistingOnDemandRequestsTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ScheduleDateAndTimeTest"/>
+        <listEntry value="com.ppAPI.PpickupAcdPostTest"/>
+        <listEntry value="com.ppAPI.ScheduledPickupPutTest"/>
+        <listEntry value="com.ppAPI.PickupOndemandGetPriceTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.CreateOnDemandPackingIndivdullayTest"/>
+        <listEntry value="com.sharedlibrary.BasicSelects"/>
+        <listEntry value="com.ppAPI.GetHistoryTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.AddNewAddressTest"/>
+        <listEntry value="com.ppAPI.AllActiveAndOnHoldPickupGetTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.ModifyOnDemandAvailabilityChangedTest"/>
+        <listEntry value="com.parcelpickupFrontEnd.HistoryTest"/>
+        <listEntry value="com.ppAPI.CreateOnDemandErrorsTest"/>
+        <listEntry value="com.ppAPI.AallSuit"/>
+        <listEntry value="com.ppAPI.ValidateRequest"/>
+    </listAttribute>
+    <listAttribute key="org.testng.eclipse.METHOD_TEST_LIST"/>
+    <listAttribute key="org.testng.eclipse.PACKAGE_TEST_LIST"/>
+    <stringAttribute key="org.testng.eclipse.PRE_DEFINED_LISTENERS" value=""/>
+    <intAttribute key="org.testng.eclipse.TYPE" value="1"/>
+</launchConfiguration>

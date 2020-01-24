@@ -1,0 +1,36 @@
+1568657514070	Rename type 'DriversInstructions'
+1568657522761	Rename type 'EditLocationFromSubmit'
+1568657531893	Rename type 'EditScheduled'
+1568657539863	Rename type 'ExistingPickupWithinOneHour'
+1568657550034	Rename type 'HeaderAndFooter'
+1568657560353	Rename type 'History'
+1568657568554	Rename type 'IilpFlag'
+1568657576900	Rename type 'LocationAndAccounts'
+1568657588878	Rename type 'Messages'
+1568657596920	Rename type 'PaymentOnDemand'
+1568657605879	Rename type 'PaymentScheduled'
+1568657616729	Rename type 'ProgressBar'
+1568657625644	Rename type 'PyamentNegativeScenarios'
+1568657635135	Rename type 'SchedueledCreatePickupBusinessAddress'
+1568657645019	Rename type 'ScheduledAlternateAddressHasRecuringOrder'
+1568657652894	Rename type 'ScheduleDateAndTime'
+1568657663220	Rename type 'SpinnerOnDemand'
+1568657670454	Rename type 'SpinnerSchedule'
+1568659592069	Move compilation unit
+1568660439395	Move compilation unit
+1568660455418	Move compilation units
+1568664204404	Move compilation unit
+1568664221072	Copy compilation unit
+1568728344948	Copy compilation unit
+1568728361568	Copy compilation unit
+1568728379976	Delete element
+1568728385561	Delete element
+1568728393888	Copy compilation unit
+1568730427345	Copy compilation unit
+1568742807158	Delete element
+1568744524838	Delete element
+1568746169979	Delete element
+1568747161845	Delete element
+1568751615980	Delete element
+1568814901229	Move compilation unit
+1568831388780	Rename type 'OrderDetails'

@@ -1,0 +1,289 @@
+package testsParcelPickupFrontend;
+
+
+
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import main.java.*;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
+public class PaymentScheduled {
+	private static WebDriver driver;
+	private static Helper helper;
+	WebDriverWait wait = new WebDriverWait(driver, 60);
+
+	@BeforeClass
+	public static void setUp() throws Exception {
+		helper = Helper.getInstance();
+		driver = Helper.getDriver();
+		driver.manage().window().setSize(new Dimension(1360, 1000));
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+		helper.pickupOnDemandDelete("0007231196");
+		helper.pickupScheduledDelete("0007231196");
+		driver.navigate().to(helper.getProperty("stagingHome"));
+		String user = "erpUser";
+		String password = "erpPassword";
+		helper.pickupScheduledDelete("0007231196");
+		helper.signInCP(driver, user, password);
+
+	}
+
+	@Test
+	public void paymentIsZero() throws InterruptedException, java.text.ParseException {
+		System.out.println("Starting test " + new Object() {
+		}.getClass().getEnclosingMethod().getName());
+		driver.navigate().to(helper.getProperty("parcelPickup"));
+		helper.closeCookieBanner(driver);
+		Thread.sleep(3000);
+		driver.findElement(By.xpath("//*[contains(text(),'Recurring (scheduled)')]")).click();
+
+		///click on alternate address 
+
+		
+///instructions
+		WebElement instruction = driver.findElement(By.tagName("app-instructions"));
+		instruction.findElement(By.className("arrow-down")).click();
+		Thread.sleep(1000);
+		try {
+			WebElement container = instruction.findElement(By.className("visible-menu"));
+		}
+		catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		WebElement container = driver.findElement(By.className("visible-menu"));
+		WebElement ulist = container.findElement(By.tagName("ul"));
+		List <WebElement> dragAndDropList = ulist.findElements(By.tagName("li"));       
+	    Object[] dragAndDropArary = dragAndDropList.toArray(); 
+	    ((WebElement) dragAndDropArary[3]).click();		
+		/////contact informations
+	    driver.findElement(By.id("contactFullName")).clear();
+		driver.findElement(By.id("contactFullName")).sendKeys("Name Test");
+		driver.findElement(By.id("contactEmail")).clear();
+		driver.findElement(By.id("contactEmail")).sendKeys("email@gm.com");
+		driver.findElement(By.id("contactPhoneNumber")).clear();
+		driver.findElement(By.id("contactPhoneNumber")).sendKeys("6547653331");
+		driver.findElement(By.id("contactPhoneExt")).clear();
+		driver.findElement(By.id("contactPhoneExt")).sendKeys("876");
+		///check box send e-mail adress
+		driver.findElement(By.cssSelector("label[for=emailUpdates]")).click();
+		////buton continue 
+		driver.findElement(By.id("contactSubmit")).click();	
+		Thread.sleep(2000);
+		//////Packing
+		//Grouped on pallets or in containers
+		driver.findElement(By.xpath("//*[@id=\"app-radio-group-3\"]/div[2]/div/div/span")).click();
+		//Quantity
+		//Number of pallets or containers		
+		WebElement numberOfItems = driver.findElement(By.id("packingNumberOfPallets"));
+		numberOfItems.sendKeys("3");
+		Thread.sleep(500);
+
+		//Submit page
+		driver.findElement(By.id("packingSubmit")).click();
+		Thread.sleep(2000);
+		////Data and time
+		///Page title
+		WebElement title = driver.findElement(By.tagName("h2"));
+		helper.addBoarder(driver, title);
+		Assert.assertEquals("Date and time", title.getText());
+		////Closing time
+		WebElement closingTime = driver.findElement(By.id("datetimePickupTimeDropdown"));
+		closingTime.click();
+		driver.findElement(By.xpath("//*[@id=\"datetimePickupTimeDropdown\"]/div/div/div")).click();
+		Thread.sleep(1000);
+		try {
+			 container = driver.findElement(By.className("visible-menu"));
+		}
+		catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		 container = driver.findElement(By.className("visible-menu"));
+		 ulist = container.findElement(By.tagName("ul"));
+		dragAndDropList = ulist.findElements(By.tagName("li"));       
+	    dragAndDropArary = dragAndDropList.toArray(); 
+	    ((WebElement) dragAndDropArary[3]).click();	
+		
+		///select day
+		driver.findElement(By.xpath("//*[@id=\"timeSlot0\"]/timeslot/div/div/div[2]")).click();
+		
+		///Rerady for pickup time
+	    driver.findElement(By.id("datetimePickupTimeDropdown")).click();
+		List <WebElement> businessTimeList = driver.findElements(By.cssSelector("li[role=option]"));
+		Object[] businessTimeArary = businessTimeList.toArray(); 
+		int randomBussinesTime = ThreadLocalRandom.current().nextInt(1,businessTimeArary.length);
+		((WebElement) businessTimeArary[randomBussinesTime]).click();
+		Thread.sleep(1000); 
+		
+		////Business closing time
+		//WebElement BusinessClosingTime = driver.findElement(By.id("closingTimeDropdown-shared"));
+		driver.findElement(By.xpath("//*[@id=\"closingTimeDropdown-shared\"]/div/div/div")).click();
+		 businessTimeList = driver.findElements(By.cssSelector("li[role=option]"));
+		businessTimeArary = businessTimeList.toArray(); 
+		 randomBussinesTime = ThreadLocalRandom.current().nextInt(1,businessTimeArary.length);
+		((WebElement) businessTimeArary[randomBussinesTime]).click();
+		Thread.sleep(1000); 
+		
+		
+		/////submit page
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(5000); 
+		////payment
+
+		driver.switchTo().defaultContent();
+		driver.switchTo().frame(driver.findElement(By.id("cpwa__frame")));
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//*[@id=\"placeOrder\"]/p/input")).click();
+		driver.switchTo().defaultContent();
+		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("img[@alt='spinner']")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("paymentBlockUIContainer")));
+		WebElement speener = helper.FindElementSafe(driver, By.id("paymentBlockUIContainer"));
+		Assert.assertNotEquals(null, speener);
+		//Xpath=//tagname[@attribute='value']
+		
+		Thread.sleep(2000); 		
+		
+		
+
+
+	}
+
+	@Test
+	public void paymentIsNotZero() throws InterruptedException, java.text.ParseException {
+		System.out.println("Starting test " + new Object() {
+		}.getClass().getEnclosingMethod().getName());
+		driver.navigate().to(helper.getProperty("parcelPickup"));
+		helper.closeCookieBanner(driver);
+		Thread.sleep(3000);
+		driver.findElement(By.xpath("//*[contains(text(),'Recurring (scheduled)')]")).click();
+
+		///click on alternate address 
+
+		
+///instructions
+		WebElement instruction = driver.findElement(By.tagName("app-instructions"));
+		instruction.findElement(By.className("arrow-down")).click();
+		Thread.sleep(1000);
+		try {
+			WebElement container = instruction.findElement(By.className("visible-menu"));
+		}
+		catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		WebElement container = driver.findElement(By.className("visible-menu"));
+		WebElement ulist = container.findElement(By.tagName("ul"));
+		List <WebElement> dragAndDropList = ulist.findElements(By.tagName("li"));       
+	    Object[] dragAndDropArary = dragAndDropList.toArray(); 
+	    ((WebElement) dragAndDropArary[3]).click();		
+		/////contact informations
+	    driver.findElement(By.id("contactFullName")).clear();
+		driver.findElement(By.id("contactFullName")).sendKeys("Name Test");
+		driver.findElement(By.id("contactEmail")).clear();
+		driver.findElement(By.id("contactEmail")).sendKeys("email@gm.com");
+		driver.findElement(By.id("contactPhoneNumber")).clear();
+		driver.findElement(By.id("contactPhoneNumber")).sendKeys("6547653331");
+		driver.findElement(By.id("contactPhoneExt")).clear();
+		driver.findElement(By.id("contactPhoneExt")).sendKeys("876");
+		///check box send e-mail adress
+		driver.findElement(By.cssSelector("label[for=emailUpdates]")).click();
+		////buton continue 
+		driver.findElement(By.id("contactSubmit")).click();	
+		Thread.sleep(2000);
+		//////Packing
+		//Grouped on pallets or in containers
+		driver.findElement(By.xpath("//*[@id=\"app-radio-group-3\"]/div[2]/div/div/span")).click();
+		//Quantity
+		//Number of pallets or containers		
+		WebElement numberOfItems = driver.findElement(By.id("packingNumberOfPallets"));
+		numberOfItems.sendKeys("3");
+		Thread.sleep(500);
+
+		//Submit page
+		driver.findElement(By.id("packingSubmit")).click();
+		Thread.sleep(2000);
+		////Data and time
+		///Page title
+		WebElement title = driver.findElement(By.tagName("h2"));
+		helper.addBoarder(driver, title);
+		Assert.assertEquals("Date and time", title.getText());
+		////Closing time
+		WebElement closingTime = driver.findElement(By.id("datetimePickupTimeDropdown"));
+		closingTime.click();
+		driver.findElement(By.xpath("//*[@id=\"datetimePickupTimeDropdown\"]/div/div/div")).click();
+		Thread.sleep(1000);
+		try {
+			 container = driver.findElement(By.className("visible-menu"));
+		}
+		catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		 container = driver.findElement(By.className("visible-menu"));
+		 ulist = container.findElement(By.tagName("ul"));
+		dragAndDropList = ulist.findElements(By.tagName("li"));       
+	    dragAndDropArary = dragAndDropList.toArray(); 
+	    ((WebElement) dragAndDropArary[3]).click();	
+		
+		///select day
+		driver.findElement(By.xpath("//*[@id=\"timeSlot0\"]/timeslot/div/div/div[2]")).click();
+		
+		///Rerady for pickup time
+	    driver.findElement(By.id("datetimePickupTimeDropdown")).click();
+		List <WebElement> businessTimeList = driver.findElements(By.cssSelector("li[role=option]"));
+		Object[] businessTimeArary = businessTimeList.toArray(); 
+		int randomBussinesTime = ThreadLocalRandom.current().nextInt(1,businessTimeArary.length);
+		((WebElement) businessTimeArary[randomBussinesTime]).click();
+		Thread.sleep(1000); 
+		
+		////Business closing time
+		//WebElement BusinessClosingTime = driver.findElement(By.id("closingTimeDropdown-shared"));
+		driver.findElement(By.xpath("//*[@id=\"closingTimeDropdown-shared\"]/div/div/div")).click();
+		 businessTimeList = driver.findElements(By.cssSelector("li[role=option]"));
+		businessTimeArary = businessTimeList.toArray(); 
+		 randomBussinesTime = ThreadLocalRandom.current().nextInt(1,businessTimeArary.length);
+		((WebElement) businessTimeArary[randomBussinesTime]).click();
+		Thread.sleep(1000); 
+		
+		
+		/////submit page
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(5000); 
+		////payment
+
+		driver.switchTo().defaultContent();
+		driver.switchTo().frame(driver.findElement(By.id("cpwa__frame")));
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//*[@id=\"placeOrder\"]/p/input")).click();
+		driver.switchTo().defaultContent();
+		//wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("img[@alt='spinner']")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("paymentBlockUIContainer")));
+		WebElement speener = helper.FindElementSafe(driver, By.id("paymentBlockUIContainer"));
+		Assert.assertNotEquals(null, speener);
+		//Xpath=//tagname[@attribute='value']
+		
+		Thread.sleep(2000); 		
+		
+		
+
+
+	}
+	
+	@AfterClass
+	public static void closeBrowser() throws Exception {
+		helper.takeScreenshot(driver, "DateAndTime");
+		driver.quit();
+	}
+}

@@ -1,0 +1,158 @@
+package testsParcelPickupFrontend;
+
+
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import main.java.*;
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
+public class IilpFlag {
+	private static WebDriver driver;
+	private static Helper helper;
+
+	@Before
+	public  void setUp() throws Exception {
+		helper = Helper.getInstance();
+		driver = Helper.getDriver();
+		driver.manage().window().setSize(new Dimension(1360, 1000));
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+		driver.navigate().to(helper.getProperty("stagingHome"));
+
+	}
+
+	@Test
+	public void iipPresented() throws InterruptedException {
+		String user = "noiilpuserl";
+		String password = "noiilppassword";		
+		helper.signInCP(driver, user, password);
+		System.out.println("Starting test " + new Object() {
+		}.getClass().getEnclosingMethod().getName());
+		driver.navigate().to(helper.getProperty("parcelPickup"));
+		helper.closeCookieBanner(driver);
+		driver.findElement(By.xpath("//div[text()='Use an alternate address']")).click();
+		Thread.sleep(1000);
+		WebElement manualEntryLink =  driver.findElement(By.xpath("//*[@id=\"main-content\"]/div/div/app-root/div/app-location/div/div/form/div[3]/app-address/div/div[2]/span"));
+		manualEntryLink.click();
+		Thread.sleep(1000);
+		//manualEntryLink.click();
+		Thread.sleep(2000);
+		driver.findElement(By.cssSelector("input[formControlName=streetAddress]")).sendKeys("1 Yonge");
+		driver.findElement(By.cssSelector("input[formControlName=city]")).sendKeys("Toronto");	
+		driver.findElement(By.cssSelector("input[formControlName=postalCode]")).sendKeys("L4X2R1");
+		helper.DragAndDrop(driver, "app-dropdown[formControlName=province]");
+		/// click on Check Address
+		driver.findElement(By.className("manual-entry-container")).findElement(By.tagName("button")).click(); 
+		////Instructions
+		WebElement instruction = driver.findElement(By.tagName("app-instructions"));
+		instruction.findElement(By.className("arrow-down")).click();
+		Thread.sleep(1000);
+		try {
+			WebElement container = instruction.findElement(By.className("visible-menu"));
+		}
+		catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		WebElement container = instruction.findElement(By.className("visible-menu"));
+		WebElement ulist = container.findElement(By.tagName("ul"));
+		List <WebElement> dragAndDropList = ulist.findElements(By.tagName("li"));       
+	    Object[] dragAndDropArary = dragAndDropList.toArray(); 
+	    ((WebElement) dragAndDropArary[3]).click();
+		driver.findElement(By.cssSelector("label[for=emailUpdates]")).click();
+		/////
+		/////contact informations
+		driver.findElement(By.id("contactFullName")).clear();
+		driver.findElement(By.id("contactFullName")).sendKeys("Name Test");
+		driver.findElement(By.id("contactEmail")).clear();
+		driver.findElement(By.id("contactEmail")).sendKeys("bjkhjkh@jhk.com");
+		driver.findElement(By.id("contactPhoneNumber")).clear();
+		driver.findElement(By.id("contactPhoneNumber")).sendKeys("6547653331");
+		driver.findElement(By.id("contactPhoneExt")).clear();
+		driver.findElement(By.id("contactPhoneExt")).sendKeys("1234");
+		driver.findElement(By.id("contactSubmit")).click();		
+		Thread.sleep(3000);
+		//////Packing
+		//Grouped on pallets or in containers
+		WebElement iip = driver.findElement(By.cssSelector("label[for=iilp]"));
+		Boolean isPrsented = iip.isDisplayed();
+		Assert.assertEquals(true, isPrsented);
+}
+	@Test
+	public void iipNotPresented() throws InterruptedException {
+		String user = "erpUser";
+		String password = "erpPassword";		
+		helper.signInCP(driver, user, password);
+		System.out.println("Starting test " + new Object() {
+		}.getClass().getEnclosingMethod().getName());
+		driver.navigate().to(helper.getProperty("parcelPickup"));
+		helper.closeCookieBanner(driver);
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//div[text()='Use an alternate address']")).click();
+		Thread.sleep(1000);
+		WebElement manualEntryLink =  driver.findElement(By.xpath("//*[@id=\"main-content\"]/div/div/app-root/div/app-location/div/div/form/div[3]/app-address/div/div[2]/span"));
+		manualEntryLink.click();
+		Thread.sleep(1000);
+		//manualEntryLink.click();
+		Thread.sleep(2000);
+		driver.findElement(By.cssSelector("input[formControlName=streetAddress]")).sendKeys("1 Yonge");
+		driver.findElement(By.cssSelector("input[formControlName=city]")).sendKeys("Toronto");	
+		driver.findElement(By.cssSelector("input[formControlName=postalCode]")).sendKeys("L4X2R1");
+		helper.DragAndDrop(driver, "app-dropdown[formControlName=province]");
+		/// click on Check Address
+		driver.findElement(By.className("manual-entry-container")).findElement(By.tagName("button")).click(); 
+		////Instructions
+		WebElement instruction = driver.findElement(By.tagName("app-instructions"));
+		instruction.findElement(By.className("arrow-down")).click();
+		Thread.sleep(1000);
+		try {
+			WebElement container = instruction.findElement(By.className("visible-menu"));
+		}
+		catch (Exception e) {
+			instruction.findElement(By.className("arrow-down")).click();
+		}
+		WebElement container = instruction.findElement(By.className("visible-menu"));
+		WebElement ulist = container.findElement(By.tagName("ul"));
+		List <WebElement> dragAndDropList = ulist.findElements(By.tagName("li"));       
+	    Object[] dragAndDropArary = dragAndDropList.toArray(); 
+	    ((WebElement) dragAndDropArary[3]).click();
+		driver.findElement(By.cssSelector("label[for=emailUpdates]")).click();
+		/////
+		/////contact informations
+		driver.findElement(By.id("contactFullName")).clear();
+		driver.findElement(By.id("contactFullName")).sendKeys("Name Test");
+		driver.findElement(By.id("contactEmail")).clear();
+		driver.findElement(By.id("contactEmail")).sendKeys("bjkhjkh@jhk.com");
+		driver.findElement(By.id("contactPhoneNumber")).clear();
+		driver.findElement(By.id("contactPhoneNumber")).sendKeys("6547653331");
+		driver.findElement(By.id("contactPhoneExt")).clear();
+		driver.findElement(By.id("contactPhoneExt")).sendKeys("1234");
+		driver.findElement(By.id("contactSubmit")).click();		
+		Thread.sleep(1000);
+		//////Packing
+		//Grouped on pallets or in containers
+		WebElement iip = helper.FindElementSafe(driver, By.cssSelector("label[for=iilp]"));
+		
+		Assert.assertEquals(null, iip);
+}
+
+	@After
+	public  void closeBrowser() throws Exception {
+		helper.takeScreenshot(driver, "IilpFlag");		
+		//driver.quit();
+	}
+}

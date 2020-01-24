@@ -1,0 +1,173 @@
+package testsParcelPickup;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import org.json.JSONException;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import main.java.Helper;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@RunWith(Parameterized.class)
+
+
+
+
+public class BusinessCalendar90Days {
+	private String type_a;
+	private String type_v;
+	private static Helper helper;
+	
+	   @Parameters(name = "{1}")
+	   public static Collection<Object[]> data() {
+	      return Arrays.asList(new Object[][] {
+	    	 { "type","01" },
+	    	 { "type1","02" },
+
+	      });
+	   }
+	
+	   public BusinessCalendar90Days(String type_a, String type_v) 
+	   {
+		   	this.type_a = type_a;
+		   	this.type_v = type_v;
+	   }
+
+	
+
+	String[] holidays = new String[] { "2018-09-03", "2018-10-08","2018-11-12", "2018-12-25", "2018-12-26", "2018-09-03",
+			"2019-01-01", "2019-02-18", "2019-04-19", "2019-04-22", "2019-05-20", "2019-07-01", "2019-08-05",
+			"2019-09-02", "2019-10-14", "2019-12-25", "2019-12-26" };;
+
+	@Test
+	public void businesDaysGet() throws InterruptedException, IOException, JSONException, ParseException {
+		helper = Helper.getInstance();
+		String url = helper.getProperty("ppstaging")+"/purs/calendar/0007023210";
+		OkHttpClient client = new OkHttpClient();
+
+		MediaType mediaType = MediaType.parse("application/vnd.cpc.purs-v1+json");
+		RequestBody body = RequestBody.create(mediaType, "{\n" + 
+				"  \"contractNbr\": \"123456789\",\n" + 
+				"  \"heavy\": true,\n" + 
+				"  \"holiday\": true,\n" + 
+				"  \"postal\": \"V1V1V2\",\n" + 
+				"  \"pww\": true,\n" + 
+				"  \"saturday\": true,\n" + 
+				"  \"sunday\": true,\n" + 
+				"  \"ton5\": true,\n" + 
+				"  \"type\": \"2\"\n" + 
+				"}");
+		Request request = new Request.Builder()
+		  .url(url)
+		  .post(body)
+		  .addHeader("Content-Type", "application/vnd.cpc.purs-v1+json")
+		  .addHeader("Accept", "application/vnd.cpc.purs-v1+json")
+		  .addHeader("Cache-Control", "no-cache")
+		  .addHeader("Postman-Token", "2b60f486-6d8c-4fa6-b198-3d76319ff2d8")
+		  .build();
+
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		Assert.assertEquals("Response Code", 200, responseCode);
+		String responseBody = response.body().string();
+		System.out.println(responseBody);
+		
+		if (type_v.equals("02"))
+		{	
+		
+		int i = 0;
+		Calendar calendar = Calendar.getInstance();
+		////////// Today///////////////
+		Date today = null;
+		Date datum1 = new Date();
+		String date = "";
+		Boolean checkString = false;
+		Calendar calendarInst1 = Calendar.getInstance();
+		calendarInst1.setTime(datum1);
+
+		if ((calendarInst1.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (Calendar.DAY_OF_WEEK == Calendar.SUNDAY)
+				|| isHoliday(datum1) != true) {
+			System.out.println(datum1);/// holiday
+		} else {
+
+			i = i + 1;
+			calendar.add(Calendar.DAY_OF_YEAR, 0);
+			date = new SimpleDateFormat("yyyy-MM-dd").format(datum1);
+			System.out.println("today:    " + date);
+			checkString = responseBody.contains(date);
+			Assert.assertEquals(true, checkString);
+		}
+
+		////// Today end///////////
+		while (i < 90) {
+			calendar.add(Calendar.DAY_OF_YEAR, 0);
+			today = calendar.getTime();
+			int a = today.getDay();
+			if (a != 6 & a != 0 & isHoliday(today) != true) {
+				date = new SimpleDateFormat("yyyy-MM-dd").format(today);
+				System.out.println("day:+" + i + "    " + date);
+				checkString = responseBody.contains(date);
+				//////on damand should not be available today if it is after 2PM
+			
+		        DateFormat df = new SimpleDateFormat("hh:mm");
+		        Date currentTimeObj = new Date();
+		        Date timeLimitObj = df.parse("02:00");				
+		        System.out.println("date1 : " + df.format(currentTimeObj));
+		        System.out.println("date2 : " + df.format(timeLimitObj));
+		        if (currentTimeObj.compareTo(timeLimitObj) < 0) {
+		            System.out.println("currentTimeObj is after timeLimitObj");
+		            if(checkString==false)
+		            {
+		            	checkString=true; ///// if is not in body response it is ok after 2pm
+		            }
+		        } else if (currentTimeObj.compareTo(timeLimitObj) > 0) {
+		            System.out.println("currentTimeObj is before timeLimitObj");
+		        }
+		        //////END on damand should not be available today if it is after 2PM
+				Assert.assertEquals("expecting" + date, true, checkString); ////////////////////////////////failed time
+
+			}
+			i = i + 1;
+		}
+
+	}
+}
+
+	boolean isHoliday(Date today) throws ParseException {
+		Date holiday = null;
+		Boolean holYes = false;
+		int j = 0;
+		int b = holidays.length;
+		String today1 = new SimpleDateFormat("yyyy-MM-dd").format(today);
+		while (j < b) {
+			holiday = new SimpleDateFormat("yyyy-MM-dd").parse(holidays[j]);
+			String holiday1 = new SimpleDateFormat("yyyy-MM-dd").format(holiday);
+			if (holiday1.equals(today1)) {
+				holYes = true;
+				j++;
+			} else {
+				j++;
+			}
+		}
+		return holYes;
+	}
+
+}

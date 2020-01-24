@@ -1,0 +1,62 @@
+1568061132359	Delete element
+1568063541544	Delete element
+1568137222672	Delete element
+1568138958543	Rename type 'CreateOnDemandDifferentPaymentMetods'
+1568139913138	Rename type 'PackingIndivdullay'
+1568139969838	Rename type 'PackingPallets'
+1568168388221	Copy compilation unit
+1568211733567	Delete element
+1568211762849	Rename package 'testsDashboard'
+1568211779104	Rename package 'testsPackageRedirect'
+1568212047368	Copy package
+1568212069321	Delete element
+1568212094742	Copy package
+1568212106729	Delete element
+1568212168647	Delete element
+1568212799951	Move compilation unit
+1568315205360	Copy compilation unit
+1568315243878	Copy compilation unit
+1568315274247	Copy compilation unit
+1568315481073	Copy folder
+1568318648292	Copy file
+1568318853748	Copy file
+1568344758111	Delete element
+1568344992835	Copy compilation unit
+1568399083796	Rename type 'AllActiveAndOnHoldPickupGet'
+1568399115051	Rename type 'BPostalCodeGet'
+1568399777515	Rename type 'BusinessCalendarOnDemand'
+1568399793701	Rename type 'BusinessCallendarScheduled'
+1568399870127	Rename type 'CalendarOnDemandParametars'
+1568399879091	Rename type 'CheckExistingOnDemandRequests'
+1568399889398	Rename type 'CloseExistingOnDemand'
+1568399926223	Rename type 'closeExistingScheduled'
+1568399936545	Rename type 'CreateOnDemandErrors'
+1568399944440	Rename type 'EligibilityCustomer_old'
+1568399953641	Rename type 'EligibilityCustomer'
+1568399964482	Rename type 'GetHistory'
+1568399975538	Rename type 'GetPickupAvailability'
+1568399989247	Rename type 'GetPickupAvailabilityV2'
+1568400009345	Rename type 'OnDemandRequestCancel'
+1568400018536	Rename type 'PickupGETdetails'
+1568400026930	Rename type 'PickupOndemandGetPrice'
+1568400035966	Rename type 'PickupOndemandPost'
+1568400053015	Rename type 'PickupOnDemandPut'
+1568400061424	Rename type 'PickupPrinters'
+1568400069916	Rename type 'PpickupAcdPost'
+1568400080258	Rename type 'ScheduledPickupOnHoldPost'
+1568400087566	Rename type 'ScheduledPickupPost'
+1568400095432	Rename type 'ScheduledPickupPut'
+1568400107111	Rename type 'ScheduledPickupResumeDelete'
+1568400121541	Rename type 'ScheduledRequestCancel'
+1568400143822	Rename type 'TimeZone'
+1568400333602	Rename type 'ValidateOnDemand'
+1568400878197	Rename type 'AallTests'
+1568401181531	Rename type 'AllTests'
+1568404867857	Rename type 'AddNewAddress'
+1568404879202	Rename type 'AlternateAddressAsMainLocation'
+1568405042779	Rename type 'BlockedAccount'
+1568405053231	Rename type 'ContactInfromation'
+1568405065877	Rename type 'CreateOnDemandPackingIndivdullay'
+1568405076845	Rename type 'CreateOnDemandPackingPallets'
+1568405087739	Rename type 'DateAndTime'
+1568405097766	Rename type 'DifferentPaymentMetods'

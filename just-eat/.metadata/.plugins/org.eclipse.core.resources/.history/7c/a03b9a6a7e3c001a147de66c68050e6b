@@ -1,0 +1,139 @@
+package com.parcelpickupFrontEnd;
+
+
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.testng.annotations.*;
+
+import com.sharedlibrary.Components;
+import com.sharedlibrary.Helper;
+
+import io.netty.util.internal.ThreadLocalRandom;
+
+import org.junit.FixMethodOrder;
+import org.junit.runners.MethodSorters;
+
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
+public class AdminToolRebookAvailabilityChangedTest {
+	private static WebDriver driver;
+	private static Helper helper;
+	
+
+
+	@BeforeClass
+	@Parameters({ "browser" })
+	public  void setUp(@Optional("chrome") String browser) throws Exception {
+		helper = Helper.getInstance();
+		driver = Helper.getDriver(browser);
+		driver.manage().window().setSize(new Dimension(1360, 1000));
+		System.out.println("Starting test " + new Object() {}.getClass().getEnclosingMethod().getName());
+
+	}
+	@Test
+
+	public void CreateOnDemand() throws InterruptedException, IOException, SQLException {
+		///Set availability
+		String query1 = "UPDATE PICKUP_availability SET SERVICES_AVAILABLE ='ADHOC, RECUR' WHERE POSTAL_CODE='L4X2R3'";
+        System.out.println(query1);
+        Connection connection = null;
+        connection = helper.connetToPURSEdb();	        
+        Statement stmt = connection.createStatement();
+        ResultSet rs1 = stmt.executeQuery(query1);
+        
+		///logitn to admin tool
+		String customerNumber = helper.getProperty("erpCustomerNumber");
+		Components.adminToolLogin(driver, customerNumber);
+		Thread.sleep(4000);
+		 /////create new pickup
+		driver.findElement(By.id("createNewPickup")).click();
+		Thread.sleep(2000);	
+		helper.closeCookieBanner(driver);
+		Components.alternateAddress(driver, "L4X2R3");
+		Components.instructions(driver);
+		//// buton continue
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+        String contactEmail = (String) javascriptExecutor.executeScript("return document.getElementById('contactEmail').value");
+		driver.findElement(By.id("contactSubmit")).click();
+		Thread.sleep(2000);
+
+	//////Packing
+		//////Packing
+		//Quantity and weight >9999
+		Components.packing(driver);
+		//shiping services 
+		Components.shipingServicesNoPayment(driver);
+		//Submit page
+		driver.findElement(By.id("packingSubmit")).click();	
+		////date and time
+		///Calendar
+		Thread.sleep(5000);
+		Components.onDemandPickuptime(driver);	
+		driver.findElement(By.id("datetimeSubmit")).click();
+		Thread.sleep(5000);
+		driver.findElement(By.id("reviewSubmit")).click();
+		WebDriverWait wait = new WebDriverWait(driver, 60);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("pickup-confirmation-number")));
+		driver.switchTo().defaultContent();
+		Thread.sleep(1000);
+		String confirmation = driver.findElement(By.className("pickup-confirmation-number")).getText();
+		String[] parts = confirmation.split(": ");
+		String id = parts[1]; // 004
+		
+		///go to details
+		driver.findElement(By.id("createRtnBtn")).click();
+		Thread.sleep(3000);
+		helper.closeCookieBanner(driver);
+		Thread.sleep(2000);
+		WebElement listveiw = driver.findElement(By.className("mytable"));
+		listveiw.findElement(By.partialLinkText(id)).click();///// add id
+		///Change availability
+		 query1 = "UPDATE PICKUP_availability SET SERVICES_AVAILABLE ='RECUR' WHERE POSTAL_CODE='L4X2R3'";
+       System.out.println(query1);
+        connection = null;
+       connection = helper.connetToPURSEdb();	        
+        stmt = connection.createStatement();
+        rs1 = stmt.executeQuery(query1);
+		///Reebook
+		Thread.sleep(2000);
+		 WebElement rebook = helper.FindElementSafe(driver, By.className("micro-rebook"));
+		 rebook.click();
+		 Thread.sleep(4000);
+		 /////check "Unable to edit pickup details" is presented 
+		 WebElement errorMsg = helper.FindElementSafe(driver, By.className("modal-content"));
+		 Assert.assertNotEquals(null, errorMsg);
+			 query1 = "UPDATE PICKUP_availability SET SERVICES_AVAILABLE ='ADHOC, RECUR' WHERE POSTAL_CODE='L4X2R3'";
+	        System.out.println(query1);
+	         connection = null;
+	        connection = helper.connetToPURSEdb();	        
+	         stmt = connection.createStatement();
+	         rs1 = stmt.executeQuery(query1);
+					
+	}
+	
+
+	
+	
+	
+
+	@AfterClass
+	public static void quitBrowser() throws Exception {
+		helper.takeScreenshot(driver, "AdminToolRebookAvailabilityChangedTest");
+		driver.quit();
+	}
+}
