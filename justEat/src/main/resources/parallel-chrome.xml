@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="ParcelPickupFrontEnd" parallel="classes" thread-count="1">
+  <parameter name="browser" value="chrome"/>
+  
+  <!-- <listeners>
+        <listener class-name="com.epam.reportportal.testng.ReportPortalTestNGListener"/>
+    </listeners>   -->
+    
+    <test name="ParcelPickupFrontEnd-ChromeTests">
+            
+             
+        <classes>
+        	<class name="com.frontEnd.JustEatSearchTest"/>
+        	<class name="com.frontEnd.searchForDishOrRestorantFromResultPageTest"/>
+        </classes>
+    </test>
+    
+    
+  
+  
+   </suite>

@@ -1,0 +1,420 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>tests.selenium.smg.com</groupId>
+
+	<artifactId>selenium_mvn</artifactId>
+
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>Selenium MVN project</name>
+
+	<description>Selenium tests for SMG</description>
+
+<properties>
+    <aspectj.version>1.8.10</aspectj.version>
+      <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <nexus.url>http://devtools.cpggpc.ca/nexus/repository/maven-public</nexus.url>
+</properties>
+
+  
+
+	<build>
+
+
+		<pluginManagement>
+
+			<plugins>
+              <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.20</version>
+            <configuration>
+                <testFailureIgnore>false</testFailureIgnore>
+                <argLine>
+                    -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                </argLine>
+                
+	           <suiteXmlFiles>
+	                <suiteXmlFile>src/main/resources/parallel-chrome.xml</suiteXmlFile>   
+	           </suiteXmlFiles>
+	          
+	           <properties>
+                        <property>
+                            <name>usedefaultlisteners</name> <!-- disabling default listeners is optional -->
+                            <value>true</value>
+                        </property>
+               </properties>
+	           
+	          
+	                
+            </configuration>
+            <dependencies>
+                <dependency>
+                    <groupId>org.aspectj</groupId>
+                    <artifactId>aspectjweaver</artifactId>
+                    <version>${aspectj.version}</version>
+                </dependency>
+            </dependencies>
+        </plugin>
+				<plugin>
+
+					<groupId>org.apache.maven.plugins</groupId>
+
+					<artifactId>maven-compiler-plugin</artifactId>
+
+					<version>2.3.2</version>
+
+					<configuration>
+
+						<showDeprecation>false</showDeprecation>
+
+						<showWarnings>false</showWarnings>
+
+						<source>1.8</source>
+
+						<target>1.8</target>
+
+					</configuration>
+
+				</plugin>
+
+			</plugins>
+
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>exe</nonFilteredFileExtension>
+						<nonFilteredFileExtension>mac</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>main</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<repositories>
+				<repository>
+					<id>maven.oracle.com</id>
+					<url>https://maven.oracle.com</url>
+					<layout>default</layout>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+				</repository>
+			</repositories>
+		</profile>
+		
+	<!-- 	<profile>
+            <id>FireFoxExecution</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.20</version>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>
+                                    src/main/resources/parallel-firefox.xml
+                                </suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+		 -->
+		
+	</profiles>
+
+	<dependencies>
+<!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-junit4 -->
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.9</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl -->
+		<dependency>
+			<groupId>net.sourceforge.jexcelapi</groupId>
+			<artifactId>jxl</artifactId>
+			<version>2.6.12</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.rometools/rome -->
+		<dependency>
+			<groupId>com.rometools</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+
+
+		<dependency>
+
+			<groupId>org.seleniumhq.selenium</groupId>
+
+			<artifactId>selenium-java</artifactId>
+
+			<version>3.141.59</version>
+
+		</dependency>
+
+
+
+		<dependency>
+
+			<groupId>org.seleniumhq.selenium</groupId>
+
+			<artifactId>selenium-firefox-driver</artifactId>
+
+			<version>3.141.59</version>
+
+		</dependency>
+
+
+
+
+
+		<dependency>
+
+			<groupId>org.seleniumhq.selenium</groupId>
+
+			<artifactId>selenium-chrome-driver</artifactId>
+
+			<version>3.141.59</version>
+
+		</dependency>
+
+
+
+		<dependency>
+
+			<groupId>org.seleniumhq.selenium</groupId>
+
+			<artifactId>selenium-ie-driver</artifactId>
+
+			<version>3.141.59</version>
+
+		</dependency>
+
+		<dependency>
+
+			<groupId>org.seleniumhq.selenium</groupId>
+
+			<artifactId>selenium-safari-driver</artifactId>
+
+			<version>3.141.59</version>
+
+		</dependency>
+		
+		<dependency>
+            <groupId>com.epam.reportportal</groupId>
+            <artifactId>agent-java-testng</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <!-- logger -->
+        <dependency>
+            <groupId>com.epam.reportportal</groupId>
+            <artifactId>logger-java-log4j</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+        <!-- logger -->
+		
+		
+
+		<dependency>
+
+			<groupId>log4j</groupId>
+
+			<artifactId>log4j</artifactId>
+
+			<version>1.2.17</version>
+
+		</dependency>
+		
+		<dependency>
+
+			<groupId>io.appium</groupId>
+
+			<artifactId>java-client</artifactId>
+
+			<version>2.1.0</version>
+
+		</dependency>
+
+		
+		<dependency>
+
+			<groupId>junit</groupId>
+
+			<artifactId>junit</artifactId>
+
+			<version>4.12</version>
+
+			<scope>compile</scope>
+
+		</dependency>
+		
+
+
+
+		<dependency>
+
+			<groupId>io.selendroid</groupId>
+
+			<version>0.12.0</version>
+
+			<artifactId>selendroid-standalone</artifactId>
+
+		</dependency>
+
+		<dependency>
+
+			<groupId>io.selendroid</groupId>
+
+			<version>0.12.0</version>
+
+			<artifactId>selendroid-client</artifactId>
+
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.testng</groupId>
+		    <artifactId>testng</artifactId>
+		    <version>7.0.0</version>
+		</dependency>
+		
+
+		<dependency>
+
+			<groupId>org.im4java</groupId>
+
+			<artifactId>im4java</artifactId>
+
+			<version>1.4.0</version>
+
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.monte/screen-recorder -->
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-exec</artifactId>
+			<version>1.3</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>io.qameta.allure</groupId>
+		    <artifactId>allure-testng</artifactId>
+		    <version>2.13.0</version>
+		</dependency>
+				
+		
+		<dependency>
+		  <groupId>com.eclipsesource.minimal-json</groupId>
+		  <artifactId>minimal-json</artifactId>
+		  <version>0.9.4</version>
+		</dependency>
+<!-- https://mvnrepository.com/artifact/oracle/ojdbc6 -->
+		<dependency>
+		    <groupId>com.oracle</groupId>
+		    <artifactId>ojdbc</artifactId>
+		    <version>11.2.0</version>
+		    <scope>system</scope>
+		    <systemPath>${basedir}/ext/ojdbc6.jar</systemPath>
+		</dependency>
+
+	</dependencies>
+	
+	    <repositories>
+        <repository>
+            <id>innovapost.nexus</id>
+            <url>https://devtools.cpggpc.ca/nexus/repository/automation.framework</url>
+        </repository>
+        <repository>
+            <id>all</id>
+            <url>${nexus.url}</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Plugin Repository</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>all</id>
+            <url>${nexus.url}</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.9.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.21.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
+    
+
+</project>
